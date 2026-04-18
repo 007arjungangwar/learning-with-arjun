@@ -33,6 +33,65 @@
     </nav>
 
     <main>
+<div class="external-links-section" style="background: #f0f7ff; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem;">
+    <h3>📝 Also find me on Medium</h3>
+    <p>I write detailed articles on Medium. Click below to read!</p>
+    <div id="mediumLinks"></div>
+    <button onclick="addMediumLink()" class="btn-secondary" style="margin-top: 1rem;">+ Add your Medium article link</button>
+</div>
+
+<script>
+// Store Medium links
+let mediumLinks = JSON.parse(localStorage.getItem('mediumLinks') || '[]');
+
+// Display Medium links
+function displayMediumLinks() {
+    const container = document.getElementById('mediumLinks');
+    if(mediumLinks.length === 0) {
+        container.innerHTML = '<p>No links yet. Add your first Medium article!</p>';
+    } else {
+        container.innerHTML = mediumLinks.map(link => `
+            <div style="margin: 0.5rem 0; padding: 0.5rem; background: white; border-radius: 8px;">
+                <a href="${link.url}" target="_blank" style="font-weight: bold;">📖 ${link.title}</a>
+                <p style="font-size: 0.8rem; color: #666;">${link.description}</p>
+                <small>Added on ${new Date(link.date).toLocaleDateString()}</small>
+                <button onclick="deleteLink(${link.id})" style="float: right; background: none; border: none; color: red; cursor: pointer;">🗑️</button>
+            </div>
+        `).join('');
+    }
+}
+
+// Add new Medium link
+function addMediumLink() {
+    const title = prompt('Enter article title:');
+    if(!title) return;
+    
+    const url = prompt('Enter Medium article URL:');
+    if(!url) return;
+    
+    const description = prompt('Enter short description (optional):');
+    
+    mediumLinks.push({
+        id: Date.now(),
+        title: title,
+        url: url,
+        description: description || 'Read this article on Medium',
+        date: new Date().toISOString()
+    });
+    
+    localStorage.setItem('mediumLinks', JSON.stringify(mediumLinks));
+    displayMediumLinks();
+}
+
+// Delete link
+function deleteLink(id) {
+    mediumLinks = mediumLinks.filter(link => link.id !== id);
+    localStorage.setItem('mediumLinks', JSON.stringify(mediumLinks));
+    displayMediumLinks();
+}
+
+displayMediumLinks();
+</script>
         <div class="search-container">
             <input type="text" class="search-box" placeholder="🔍 Search tutorials, projects, resources... (Try: Python, ML, PINNs)">
             <div class="search-results" style="display: none;"></div>

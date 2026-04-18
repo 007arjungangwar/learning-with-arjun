@@ -41,6 +41,7 @@
         <p>Follow this path. Don't get overwhelmed. One step at a time.</p>
 
         <div class="roadmap">
+            <!-- Phase 1 with Resources -->
             <div class="roadmap-phase phase-1">
                 <div class="phase-number">1</div>
                 <h3>🌱 Month 1-2: Python Basics</h3>
@@ -51,6 +52,13 @@
                     <li>✅ NumPy basics</li>
                 </ul>
                 <span class="time-badge">4-6 hours/week</span>
+                
+                <!-- Resource Links -->
+                <div class="resource-links" style="margin-top: 1rem;">
+                    <a href="#" class="resource-link" onclick="showPDF('python-basics')">📄 Download Python Cheat Sheet</a>
+                    <a href="#" class="resource-link" onclick="playVideo('python-tutorial')">🎥 Watch Python Tutorial</a>
+                    <a href="#" class="resource-link" onclick="openResource('python-practice')">💻 Practice Problems</a>
+                </div>
             </div>
 
             <div class="roadmap-arrow">↓</div>
@@ -65,6 +73,13 @@
                     <li>✅ Exploratory Data Analysis</li>
                 </ul>
                 <span class="time-badge">5-7 hours/week</span>
+
+                <!-- Resource Links -->
+                <div class="resource-links" style="margin-top: 1rem;">
+                    <a href="#" class="resource-link" onclick="showPDF('python-basics')">📄 Download Python Cheat Sheet</a>
+                    <a href="#" class="resource-link" onclick="playVideo('python-tutorial')">🎥 Watch Python Tutorial</a>
+                    <a href="#" class="resource-link" onclick="openResource('python-practice')">💻 Practice Problems</a>
+                </div>
             </div>
 
             <div class="roadmap-arrow">↓</div>
@@ -79,6 +94,13 @@
                     <li>✅ Model evaluation</li>
                 </ul>
                 <span class="time-badge">6-8 hours/week</span>
+
+                <!-- Resource Links -->
+                <div class="resource-links" style="margin-top: 1rem;">
+                    <a href="#" class="resource-link" onclick="showPDF('python-basics')">📄 Download Python Cheat Sheet</a>
+                    <a href="#" class="resource-link" onclick="playVideo('python-tutorial')">🎥 Watch Python Tutorial</a>
+                    <a href="#" class="resource-link" onclick="openResource('python-practice')">💻 Practice Problems</a>
+                </div>
             </div>
 
             <div class="roadmap-arrow">↓</div>
@@ -93,6 +115,13 @@
                     <li>✅ Transfer Learning</li>
                 </ul>
                 <span class="time-badge">8-10 hours/week</span>
+
+                <!-- Resource Links -->
+                <div class="resource-links" style="margin-top: 1rem;">
+                    <a href="#" class="resource-link" onclick="showPDF('python-basics')">📄 Download Python Cheat Sheet</a>
+                    <a href="#" class="resource-link" onclick="playVideo('python-tutorial')">🎥 Watch Python Tutorial</a>
+                    <a href="#" class="resource-link" onclick="openResource('python-practice')">💻 Practice Problems</a>
+                </div>
             </div>
 
             <div class="roadmap-arrow">↓</div>
@@ -107,6 +136,13 @@
                     <li>✅ Apply for internships</li>
                 </ul>
                 <span class="time-badge">10+ hours/week</span>
+
+                <!-- Resource Links -->
+                <div class="resource-links" style="margin-top: 1rem;">
+                    <a href="#" class="resource-link" onclick="showPDF('python-basics')">📄 Download Python Cheat Sheet</a>
+                    <a href="#" class="resource-link" onclick="playVideo('python-tutorial')">🎥 Watch Python Tutorial</a>
+                    <a href="#" class="resource-link" onclick="openResource('python-practice')">💻 Practice Problems</a>
+                </div>
             </div>
         </div>
 
@@ -267,5 +303,73 @@ function closeHelp() {
     helpPopup.classList.remove('active');
 }
 </script>
+
+<script>
+// Resource functions
+function showPDF(topic) {
+    // Create a simple text PDF
+    const content = `
+        ===== ${topic.toUpperCase()} CHEAT SHEET =====
+        
+        1. Variables: x = 5
+        2. Lists: my_list = [1,2,3]
+        3. Loops: for i in range(10):
+        4. Functions: def my_func():
+        
+        Download this cheat sheet for quick reference!
+    `;
+    
+    const blob = new Blob([content], {type: 'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${topic}_cheatsheet.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    alert('Cheat sheet downloaded! Check your Downloads folder.');
+}
+
+function playVideo(topic) {
+    // YouTube video IDs (replace with your actual videos)
+    const videos = {
+        'python-tutorial': 'dQw4w9WgXcQ',
+        'ml-basics': 'dQw4w9WgXcQ',
+        'dl-basics': 'dQw4w9WgXcQ'
+    };
+    
+    const videoId = videos[topic] || 'dQw4w9WgXcQ';
+    const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+    window.open(videoUrl, '_blank');
+}
+
+function openResource(resource) {
+    const resources = {
+        'python-practice': 'https://www.hackerrank.com/domains/python',
+        'ml-practice': 'https://www.kaggle.com/learn',
+        'dl-practice': 'https://www.coursera.org/learn/neural-networks-deep-learning'
+    };
+    
+    const url = resources[resource] || 'https://www.google.com';
+    window.open(url, '_blank');
+}
+
+// Add YouTube playlist section
+function addYouTubePlaylist() {
+    const roadmapDiv = document.querySelector('.roadmap');
+    const playlistSection = document.createElement('div');
+    playlistSection.className = 'youtube-playlist';
+    playlistSection.style.cssText = 'background: #ff000010; padding: 1.5rem; border-radius: 12px; margin: 2rem 0;';
+    playlistSection.innerHTML = `
+        <h3>🎬 Complete Playlist on YouTube</h3>
+        <p>Subscribe and watch all tutorials in order!</p>
+        <a href="https://youtube.com/playlist?list=YOUR_PLAYLIST_ID" target="_blank" class="btn-primary" style="background: #ff0000;">▶ Watch on YouTube</a>
+    `;
+    roadmapDiv.parentNode.insertBefore(playlistSection, roadmapDiv);
+}
+
+addYouTubePlaylist();
+</script>
+
 </body>
 </html>

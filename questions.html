@@ -42,12 +42,103 @@
 
         <div class="ask-form">
             <h3>📝 Ask your question</h3>
-            <form action="#" method="post">
-                <input type="text" placeholder="Your name" class="form-input">
-                <input type="email" placeholder="Your email (so I can reply)" class="form-input">
-                <textarea rows="4" placeholder="Write your question here..." class="form-textarea"></textarea>
+            <form onsubmit="submitQuestion(event)">
+                <input type="text" id="questionName" placeholder="Your name" class="form-input" required>
+                <input type="email" id="questionEmail" placeholder="Your email (so I can reply)" class="form-input" required>
+                <textarea id="questionText" rows="4" placeholder="Write your question here..." class="form-textarea" required></textarea>
                 <button type="submit" class="btn-primary">Submit Question →</button>
             </form>
+
+            <div id="submitMessage" style="margin-top: 1rem;"></div>
+
+            <script>
+            function submitQuestion(event) {
+                event.preventDefault();
+                
+                const name = document.getElementById('questionName').value;
+                const email = document.getElementById('questionEmail').value;
+                const question = document.getElementById('questionText').value;
+                
+                // Save question to localStorage
+                let questions = JSON.parse(localStorage.getItem('studentQuestions') || '[]');
+                questions.push({
+                    id: Date.now(),
+                    name: name,
+                    email: email,
+                    question: question,
+                    date: new Date().toISOString(),
+                    answered: false,
+                    answer: null
+                });
+                localStorage.setItem('studentQuestions', JSON.stringify(questions));
+                
+                // Show success message
+                const msgDiv = document.getElementById('submitMessage');
+                msgDiv.innerHTML = '✅ Question submitted successfully! I will answer within 24 hours.';
+                msgDiv.style.color = '#28a745';
+                msgDiv.style.padding = '1rem';
+                msgDiv.style.background = '#e8f5e9';
+                msgDiv.style.borderRadius = '8px';
+                
+                // Clear form
+                document.getElementById('questionName').value = '';
+                document.getElementById('questionEmail').value = '';
+                document.getElementById('questionText').value = '';
+                
+                // Also send email notification (optional - using mailto)
+                window.location.href = `mailto:your-email@example.com?subject=New Question from ${name}&body=Question: ${question}%0A%0AFrom: ${name} (${email})`;
+                
+                setTimeout(() => {
+                    msgDiv.innerHTML = '';
+                }, 5000);
+            }
+
+            // Display existing questions and answers
+            function displayQuestions() {
+                let questions = JSON.parse(localStorage.getItem('studentQuestions') || '[]');
+                const qaContainer = document.querySelector('.qa-list') || document.createElement('div');
+                
+                if(!document.querySelector('.qa-list')) {
+                    const container = document.createElement('div');
+                    container.className = 'qa-list';
+                    document.querySelector('main').appendChild(container);
+                }
+                
+                const container = document.querySelector('.qa-list');
+                const unanswered = questions.filter(q => !q.answered).slice(-5);
+                const answered = questions.filter(q => q.answered).slice(-5);
+                
+                container.innerHTML = `
+                    <h2>📋 Recent Questions</h2>
+                    ${unanswered.map(q => `
+                        <div class="qa-item">
+                            <div class="question">
+                                <strong>Q: ${q.question}</strong>
+                                <p class="asked-by">— ${q.name}, asked on ${new Date(q.date).toLocaleDateString()}</p>
+                            </div>
+                            <div class="answer" style="color: #ff9800;">
+                                ⏳ Awaiting answer...
+                            </div>
+                        </div>
+                    `).join('')}
+                    
+                    <h2>✅ Answered Questions</h2>
+                    ${answered.map(q => `
+                        <div class="qa-item">
+                            <div class="question">
+                                <strong>Q: ${q.question}</strong>
+                                <p class="asked-by">— ${q.name}</p>
+                            </div>
+                            <div class="answer">
+                                <strong>A:</strong> ${q.answer}
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+
+            displayQuestions();
+            </script>
         </div>
 
         <h2>Recent Questions & Answers</h2>

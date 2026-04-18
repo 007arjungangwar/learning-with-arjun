@@ -83,5 +83,82 @@ function shareLinkedIn() {
     window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
 }
 </script>
+<div class="reaction-section">
+    <h3>❤️ Did this help you?</h3>
+    <div class="reaction-buttons">
+        <button class="reaction-btn" onclick="addLike()">
+            👍 Helpful <span id="likeCount">0</span>
+        </button>
+        <button class="reaction-btn" onclick="addLove()">
+            ❤️ Loved it <span id="loveCount">0</span>
+        </button>
+        <button class="reaction-btn" onclick="savePost()">
+            📌 Save for later <span id="saveCount">0</span>
+        </button>
+    </div>
+    <div id="reactionMessage" style="margin-top: 0.5rem; font-size: 0.875rem;"></div>
+</div>
+
+<script>
+// Get current post URL as unique identifier
+const currentPost = window.location.pathname;
+
+// Load saved reactions
+function loadReactions() {
+    const likes = localStorage.getItem(`${currentPost}_likes`) || 0;
+    const loves = localStorage.getItem(`${currentPost}_loves`) || 0;
+    const saves = localStorage.getItem(`${currentPost}_saves`) || 0;
+    
+    document.getElementById('likeCount').innerText = likes;
+    document.getElementById('loveCount').innerText = loves;
+    document.getElementById('saveCount').innerText = saves;
+}
+
+// Add like
+function addLike() {
+    let likes = parseInt(localStorage.getItem(`${currentPost}_likes`) || 0);
+    likes++;
+    localStorage.setItem(`${currentPost}_likes`, likes);
+    document.getElementById('likeCount').innerText = likes;
+    showMessage('Thanks for your feedback! 🙏');
+}
+
+// Add love
+function addLove() {
+    let loves = parseInt(localStorage.getItem(`${currentPost}_loves`) || 0);
+    loves++;
+    localStorage.setItem(`${currentPost}_loves`, loves);
+    document.getElementById('loveCount').innerText = loves;
+    showMessage('So glad you loved it! ❤️');
+}
+
+// Save post
+function savePost() {
+    let saves = parseInt(localStorage.getItem(`${currentPost}_saves`) || 0);
+    saves++;
+    localStorage.setItem(`${currentPost}_saves`, saves);
+    document.getElementById('saveCount').innerText = saves;
+    showMessage('Saved! Check your Profile page later 📚');
+    
+    // Save to user's saved posts
+    let savedPosts = JSON.parse(localStorage.getItem('savedPosts') || '[]');
+    if(!savedPosts.includes(currentPost)) {
+        savedPosts.push(currentPost);
+        localStorage.setItem('savedPosts', JSON.stringify(savedPosts));
+    }
+}
+
+function showMessage(msg) {
+    const msgDiv = document.getElementById('reactionMessage');
+    msgDiv.innerHTML = msg;
+    msgDiv.style.color = '#0066cc';
+    setTimeout(() => {
+        msgDiv.innerHTML = '';
+    }, 2000);
+}
+
+// Load on page load
+loadReactions();
+</script>
 </body>
 </html>
