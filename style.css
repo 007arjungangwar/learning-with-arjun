@@ -776,3 +776,29 @@ body.dark-mode .search-box {
     background: #0066cc;
     color: white;
 }
+
+
+.logout-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+.logout-btn:hover {
+    background: #cc0000;
+}
+
+.user-menu {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 1rem;
+}
+
+.user-name {
+    font-weight: bold;
+    color: #0066cc;
+}

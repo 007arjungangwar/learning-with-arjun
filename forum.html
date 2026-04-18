@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="auth-check.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Forum | Arjun's Learning Hub</title>
@@ -73,26 +74,25 @@
         }
     </style>
 </head>
+<script>
+// This ensures navigation updates on every page
+updateUIForUser();
+</script>
 <body>
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
-            <div class="nav-links">
+            <div class="nav-links" id="mainNav">
                 <a href="index.html">🏠 Home</a>
                 <a href="blog.html">📝 Blog</a>
                 <a href="projects.html">💻 Projects</a>
                 <a href="courses.html">💰 Courses</a>
                 <a href="forum.html">🗣️ Forum</a>
+                <a href="videos.html">📹 Videos</a>
                 <a href="resources.html">🎁 Resources</a>
-                <a href="questions.html">💬 Q&A</a>
                 <a href="roadmap.html">🗺️ Roadmap</a>
-                <a href="tracker.html">📊 Progress</a>
-                <a href="certificate.html">🎓 Certificate</a>
-                <a href="assistant.html">🤖 AI Assistant</a>
                 <a href="quiz.html">📝 Quiz</a>
-                <a href="about.html">👤 About</a>
-                <a href="chat.html">💬 Live Chat</a>
-                <a href="profile.html">👤 Profile</a>
+                <a href="about.html">📖 About</a>
             </div>
         </div>
     </nav>
@@ -362,5 +362,39 @@
 
         loadForum();
     </script>
+
+<!-- Public content - visible to everyone -->
+<div class="public-content">
+    <h2>Free Tutorials</h2>
+    <p>These are free for everyone!</p>
+</div>
+
+<!-- Restricted content - only for logged-in users -->
+<div class="restricted-content" id="restrictedArea">
+    <div id="loginOverlay" style="display: none;" class="login-overlay">
+        <div class="login-message">
+            <h3>🔐 Login to Access</h3>
+            <p>Create free account to access premium content, save progress, and earn certificates!</p>
+            <a href="login.html" class="btn-primary">Login / Register</a>
+        </div>
+    </div>
+    
+    <div id="premiumContent" style="display: none;">
+        <h2>Premium Content (Logged in users only)</h2>
+        <p>Your premium content here...</p>
+    </div>
+</div>
+
+<script>
+// Show/hide content based on login
+const user = getCurrentUser();
+if(user) {
+    document.getElementById('premiumContent').style.display = 'block';
+    document.getElementById('loginOverlay').style.display = 'none';
+} else {
+    document.getElementById('premiumContent').style.display = 'none';
+    document.getElementById('loginOverlay').style.display = 'flex';
+}
+</script>
 </body>
 </html>

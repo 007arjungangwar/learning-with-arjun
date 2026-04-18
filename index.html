@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="auth-check.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arjun's Learning Hub | Free DS & ML Tutorials</title>
@@ -36,28 +37,25 @@ window.addEventListener('beforeinstallprompt', (e) => {
     document.body.appendChild(installBtn);
 });
 </script>
+<script>
+// This ensures navigation updates on every page
+updateUIForUser();
+</script>
 <body>
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
-            <div class="nav-links">
+            <div class="nav-links" id="mainNav">
                 <a href="index.html">🏠 Home</a>
                 <a href="blog.html">📝 Blog</a>
                 <a href="projects.html">💻 Projects</a>
-                <a href="resources.html">🎁 Resources</a>
-                <a href="questions.html">💬 Q&A</a>
-                <a href="roadmap.html">🗺️ Roadmap</a>
-                <a href="tracker.html">📊 Progress</a>
-                <a href="about.html">👤 About</a>
-                <a href="certificate.html">🎓 Certificate</a>
-                <a href="assistant.html">🤖 AI Assistant</a>
-                <a href="quiz.html">📝 Quiz</a>
                 <a href="courses.html">💰 Courses</a>
                 <a href="forum.html">🗣️ Forum</a>
                 <a href="videos.html">📹 Videos</a>
-                <a href="admin.html">📊 Admin</a>
-                <a href="chat.html">💬 Live Chat</a>
-                <a href="profile.html">👤 Profile</a>
+                <a href="resources.html">🎁 Resources</a>
+                <a href="roadmap.html">🗺️ Roadmap</a>
+                <a href="quiz.html">📝 Quiz</a>
+                <a href="about.html">📖 About</a>
             </div>
         </div>
     </nav>
@@ -134,6 +132,30 @@ window.addEventListener('beforeinstallprompt', (e) => {
             <div class="search-results" style="display: none;"></div>
         </div>
         <section class="hero">
+            <div id="welcomeMessage" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem; border-radius: 12px; margin: 1rem 0; text-align: center;">
+                <div id="guestMessage">
+                    <h3>🎓 Welcome to Arjun's Learning Hub!</h3>
+                    <p><a href="login.html" style="color: white; font-weight: bold;">Login or Register</a> to track your progress, earn certificates, and access all features for FREE!</p>
+                </div>
+                <div id="userMessage" style="display: none;">
+                    <h3>Welcome back, <span id="userName"></span>! 🎉</h3>
+                    <p>Continue your learning journey. You've got this!</p>
+                </div>
+            </div>
+
+            <script>
+            const currentUser = getCurrentUser();
+            if(currentUser) {
+                document.getElementById('guestMessage').style.display = 'none';
+                document.getElementById('userMessage').style.display = 'block';
+                document.getElementById('userName').innerHTML = currentUser.name;
+                
+                // Track user visit
+                let visits = JSON.parse(localStorage.getItem(`user_visits_${currentUser.id}`) || '0');
+                visits++;
+                localStorage.setItem(`user_visits_${currentUser.id}`, visits);
+            }
+            </script>
             <h1>Free Data Science & ML <span class="highlight">Tutorials</span></h1>
             <p class="subtitle">Simple explanations. Real projects. No fluff. Made for students by a student at IIT Palakkad.</p>
             <div class="hero-buttons">

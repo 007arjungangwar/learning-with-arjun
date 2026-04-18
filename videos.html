@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="auth-check.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Tutorials | Arjun's Learning Hub</title>
@@ -80,11 +81,15 @@
         }
     </style>
 </head>
+<script>
+// This ensures navigation updates on every page
+updateUIForUser();
+</script>
 <body>
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
-            <div class="nav-links">
+            <div class="nav-links" id="mainNav">
                 <a href="index.html">🏠 Home</a>
                 <a href="blog.html">📝 Blog</a>
                 <a href="projects.html">💻 Projects</a>
@@ -92,15 +97,9 @@
                 <a href="forum.html">🗣️ Forum</a>
                 <a href="videos.html">📹 Videos</a>
                 <a href="resources.html">🎁 Resources</a>
-                <a href="questions.html">💬 Q&A</a>
                 <a href="roadmap.html">🗺️ Roadmap</a>
-                <a href="tracker.html">📊 Progress</a>
-                <a href="certificate.html">🎓 Certificate</a>
-                <a href="assistant.html">🤖 AI Assistant</a>
                 <a href="quiz.html">📝 Quiz</a>
-                <a href="about.html">👤 About</a>
-                <a href="chat.html">💬 Live Chat</a>
-                <a href="profile.html">👤 Profile</a>
+                <a href="about.html">📖 About</a>
             </div>
         </div>
     </nav>
