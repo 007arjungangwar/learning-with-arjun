@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Forum | Arjun's Learning Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .forum-stats {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .topic-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+            transition: transform 0.2s;
+        }
+        
+        .topic-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .topic-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .topic-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+        
+        .new-topic-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: #0066cc;
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .topic-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="blog.html">📝 Blog</a>
+                <a href="projects.html">💻 Projects</a>
+                <a href="courses.html">💰 Courses</a>
+                <a href="forum.html">🗣️ Forum</a>
+                <a href="resources.html">🎁 Resources</a>
+                <a href="questions.html">💬 Q&A</a>
+                <a href="roadmap.html">🗺️ Roadmap</a>
+                <a href="tracker.html">📊 Progress</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="quiz.html">📝 Quiz</a>
+                <a href="about.html">👤 About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <h1>🗣️ Student Discussion Forum</h1>
+        <p>Ask questions, share knowledge, learn together!</p>
+
+        <div class="forum-stats">
+            <div class="stat-card">
+                <div style="font-size: 2rem;" id="topicCount">0</div>
+                <div>Topics</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 2rem;" id="memberCount">0</div>
+                <div>Members</div>
+            </div>
+            <div class="stat-card">
+                <div style="font-size: 2rem;" id="activeCount">0</div>
+                <div>Active Today</div>
+            </div>
+        </div>
+
+        <div id="forumTopics"></div>
+    </main>
+
+    <div class="new-topic-btn" onclick="showNewTopic()">+ New Discussion</div>
+
+    <!-- New Topic Modal -->
+    <div id="topicModal" class="topic-modal">
+        <div class="modal-content" style="background: white; padding: 2rem; border-radius: 16px; max-width: 500px; width: 90%;">
+            <span class="close-modal" onclick="closeTopicModal()" style="float: right; cursor: pointer; font-size: 1.5rem;">&times;</span>
+            <h2>Start New Discussion</h2>
+            <input type="text" placeholder="Your Name" id="topicAuthor" class="form-input" style="width: 100%; margin: 0.5rem 0;">
+            <input type="text" placeholder="Topic Title" id="topicTitle" class="form-input" style="width: 100%; margin: 0.5rem 0;">
+            <textarea placeholder="Your message..." id="topicContent" rows="5" class="form-textarea" style="width: 100%; margin: 0.5rem 0;"></textarea>
+            <button class="btn-primary" onclick="createTopic()" style="width: 100%;">Post Discussion →</button>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>Arjun Gangwar</h4>
+                <p>Data Science @ IIT Palakkad</p>
+            </div>
+            <div class="social">
+                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | Learn together, grow together</p>
+    </footer>
+
+    <script>
+        function loadForum() {
+            let topics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
+            const forumDiv = document.getElementById('forumTopics');
+            
+            if(topics.length === 0) {
+                // Add sample topics
+                topics = [
+                    {
+                        id: 1,
+                        title: "How to start with Python? Need guidance!",
+                        author: "Rahul",
+                        content: "I'm new to programming. Where should I start?",
+                        replies: 3,
+                        date: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        title: "Best resources for Machine Learning?",
+                        author: "Priya",
+                        content: "Looking for free ML courses...",
+                        replies: 5,
+                        date: new Date().toISOString()
+                    }
+                ];
+                localStorage.setItem('forumTopics', JSON.stringify(topics));
+            }
+            
+            document.getElementById('topicCount').innerHTML = topics.length;
+            document.getElementById('memberCount').innerHTML = Math.floor(Math.random() * 100) + 50;
+            document.getElementById('activeCount').innerHTML = Math.floor(Math.random() * 30) + 10;
+            
+            forumDiv.innerHTML = topics.reverse().map(topic => `
+                <div class="topic-card" onclick="viewTopic(${topic.id})">
+                    <div class="topic-title">${topic.title}</div>
+                    <div>${topic.content.substring(0, 100)}...</div>
+                    <div class="topic-meta">
+                        Posted by ${topic.author} • 💬 ${topic.replies} replies • ${new Date(topic.date).toLocaleDateString()}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function showNewTopic() {
+            document.getElementById('topicModal').style.display = 'flex';
+        }
+        
+        function closeTopicModal() {
+            document.getElementById('topicModal').style.display = 'none';
+        }
+        
+        function createTopic() {
+            const author = document.getElementById('topicAuthor').value;
+            const title = document.getElementById('topicTitle').value;
+            const content = document.getElementById('topicContent').value;
+            
+            if(!author || !title || !content) {
+                alert('Please fill all fields!');
+                return;
+            }
+            
+            const topics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
+            const newTopic = {
+                id: Date.now(),
+                title: title,
+                author: author,
+                content: content,
+                replies: 0,
+                date: new Date().toISOString()
+            };
+            
+            topics.push(newTopic);
+            localStorage.setItem('forumTopics', JSON.stringify(topics));
+            
+            closeTopicModal();
+            loadForum();
+            
+            // Clear form
+            document.getElementById('topicAuthor').value = '';
+            document.getElementById('topicTitle').value = '';
+            document.getElementById('topicContent').value = '';
+            
+            alert('Topic posted! Other students can now reply.');
+        }
+        
+        function viewTopic(id) {
+            alert('Full discussion feature coming soon! For now, students can discuss on WhatsApp/Telegram group. Join our community!');
+        }
+        
+        loadForum();
+    </script>
+</body>
+</html>

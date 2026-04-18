@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses | Arjun's Learning Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .course-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .course-image {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        
+        .course-content {
+            padding: 1.5rem;
+        }
+        
+        .price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0066cc;
+            margin: 1rem 0;
+        }
+        
+        .price.free {
+            color: #28a745;
+        }
+        
+        .enroll-btn {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .enroll-btn.free-btn {
+            background: #28a745;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            float: right;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="blog.html">📝 Blog</a>
+                <a href="projects.html">💻 Projects</a>
+                <a href="courses.html">💰 Courses</a>
+                <a href="forum.html">🗣️ Forum</a>
+                <a href="resources.html">🎁 Resources</a>
+                <a href="questions.html">💬 Q&A</a>
+                <a href="roadmap.html">🗺️ Roadmap</a>
+                <a href="tracker.html">📊 Progress</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="quiz.html">📝 Quiz</a>
+                <a href="about.html">👤 About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <h1>💰 Courses & Learning Paths</h1>
+        <p>Free courses to get you started. Premium courses for serious learners.</p>
+
+        <div class="courses-grid">
+            <!-- Free Course -->
+            <div class="course-card">
+                <div class="course-image">🐍</div>
+                <div class="course-content">
+                    <h3>Python for Beginners</h3>
+                    <p>Complete Python programming from zero to hero. 20+ hours of content.</p>
+                    <div class="price free">FREE</div>
+                    <button class="enroll-btn free-btn" onclick="enrollCourse('Python for Beginners', 'free')">Start Learning →</button>
+                </div>
+            </div>
+
+            <!-- Premium Course -->
+            <div class="course-card">
+                <div class="course-image">🤖</div>
+                <div class="course-content">
+                    <h3>Machine Learning Mastery</h3>
+                    <p>From basics to advanced ML algorithms. Real projects included.</p>
+                    <div class="price">₹999 <span style="font-size: 0.8rem; color: #888;">(One-time)</span></div>
+                    <button class="enroll-btn" onclick="showPayment('Machine Learning Mastery', 999)">Enroll Now →</button>
+                </div>
+            </div>
+
+            <!-- Premium Course -->
+            <div class="course-card">
+                <div class="course-image">🧠</div>
+                <div class="course-content">
+                    <h3>Deep Learning & PINNs</h3>
+                    <p>Neural networks, CNNs, and Physics-Informed Neural Networks.</p>
+                    <div class="price">₹1499 <span style="font-size: 0.8rem; color: #888;">(Includes certificate)</span></div>
+                    <button class="enroll-btn" onclick="showPayment('Deep Learning & PINNs', 1499)">Enroll Now →</button>
+                </div>
+            </div>
+
+            <!-- Free Course -->
+            <div class="course-card">
+                <div class="course-image">📊</div>
+                <div class="course-content">
+                    <h3>Data Analysis with Pandas</h3>
+                    <p>Master data manipulation and visualization.</p>
+                    <div class="price free">FREE</div>
+                    <button class="enroll-btn free-btn" onclick="enrollCourse('Data Analysis with Pandas', 'free')">Start Learning →</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="note" style="background: #f0f7ff; padding: 1.5rem; border-radius: 12px;">
+            <h3>🎓 What you get with Premium:</h3>
+            <ul>
+                <li>✅ Complete video lectures</li>
+                <li>✅ Downloadable resources</li>
+                <li>✅ Certificate of completion</li>
+                <li>✅ Direct mentorship access</li>
+                <li>✅ Lifetime updates</li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Payment Modal -->
+    <div id="paymentModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closePayment()">&times;</span>
+            <h2>💰 Complete Payment</h2>
+            <p id="courseName"></p>
+            <p id="coursePrice"></p>
+            
+            <div style="margin: 1rem 0;">
+                <input type="text" placeholder="Full Name" id="userName" class="form-input" style="width: 100%; margin: 0.5rem 0;">
+                <input type="email" placeholder="Email" id="userEmail" class="form-input" style="width: 100%; margin: 0.5rem 0;">
+                <input type="text" placeholder="Phone (Optional)" id="userPhone" class="form-input" style="width: 100%; margin: 0.5rem 0;">
+            </div>
+            
+            <button class="btn-primary" onclick="processPayment()" style="width: 100%;">Proceed to Payment →</button>
+            <p style="font-size: 0.8rem; margin-top: 1rem;">🔒 Secure payment via UPI/Card/NetBanking</p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>Arjun Gangwar</h4>
+                <p>Data Science @ IIT Palakkad</p>
+            </div>
+            <div class="social">
+                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | Learn, Grow, Succeed</p>
+    </footer>
+
+    <script>
+        let currentCourse = {};
+        
+        function enrollCourse(courseName, type) {
+            if(type === 'free') {
+                localStorage.setItem(`enrolled_${courseName}`, 'true');
+                alert(`🎉 You've enrolled in ${courseName} for FREE! Check your email for access.`);
+                // Track enrollment
+                let enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+                enrollments.push({course: courseName, type: 'free', date: new Date().toISOString()});
+                localStorage.setItem('enrollments', JSON.stringify(enrollments));
+            }
+        }
+        
+        function showPayment(courseName, price) {
+            currentCourse = {name: courseName, price: price};
+            document.getElementById('courseName').innerHTML = `<strong>Course:</strong> ${courseName}`;
+            document.getElementById('coursePrice').innerHTML = `<strong>Amount:</strong> ₹${price}`;
+            document.getElementById('paymentModal').style.display = 'flex';
+        }
+        
+        function closePayment() {
+            document.getElementById('paymentModal').style.display = 'none';
+        }
+        
+        function processPayment() {
+            const name = document.getElementById('userName').value;
+            const email = document.getElementById('userEmail').value;
+            
+            if(!name || !email) {
+                alert('Please enter your name and email!');
+                return;
+            }
+            
+            // Store enrollment request
+            const pending = JSON.parse(localStorage.getItem('pendingEnrollments') || '[]');
+            pending.push({
+                course: currentCourse.name,
+                amount: currentCourse.price,
+                name: name,
+                email: email,
+                phone: document.getElementById('userPhone').value,
+                date: new Date().toISOString()
+            });
+            localStorage.setItem('pendingEnrollments', JSON.stringify(pending));
+            
+            alert(`📧 Thank you ${name}! We've sent payment instructions to ${email}. You'll get access within 24 hours.`);
+            closePayment();
+            
+            // Clear form
+            document.getElementById('userName').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userPhone').value = '';
+        }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('paymentModal');
+            if (event.target == modal) {
+                closePayment();
+            }
+        }
+    </script>
+</body>
+</html>
