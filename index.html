@@ -19,11 +19,80 @@
                 <a href="roadmap.html">🗺️ Roadmap</a>
                 <a href="tracker.html">📊 Progress</a>
                 <a href="about.html">👤 About</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="quiz.html">📝 Quiz</a>
             </div>
         </div>
     </nav>
 
     <main>
+        <div class="timer-container">
+            <h3>⏰ Study Timer (Pomodoro)</h3>
+            <div class="timer-session" id="sessionType">Focus Time</div>
+            <div class="timer-display" id="timerDisplay">25:00</div>
+            <div class="timer-buttons">
+                <button onclick="startTimer()">▶ Start</button>
+                <button onclick="pauseTimer()">⏸ Pause</button>
+                <button onclick="resetTimer()">🔄 Reset</button>
+            </div>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">💡 Study for 25 min, then take a 5 min break</p>
+        </div>
+
+        <script>
+        let timerInterval;
+        let timeLeft = 25 * 60;
+        let isStudySession = true;
+
+        function updateDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timerDisplay').innerHTML = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if(timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if(timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    // Switch session
+                    if(isStudySession) {
+                        alert('🎉 Great work! Time for a 5 min break!');
+                        timeLeft = 5 * 60;
+                        isStudySession = false;
+                        document.getElementById('sessionType').innerHTML = 'Break Time ☕';
+                    } else {
+                        alert('✨ Break over! Ready for another study session?');
+                        timeLeft = 25 * 60;
+                        isStudySession = true;
+                        document.getElementById('sessionType').innerHTML = 'Focus Time 🎯';
+                    }
+                    updateDisplay();
+                    startTimer();
+                    
+                    // Track study sessions
+                    let sessions = parseInt(localStorage.getItem('studySessions') || '0');
+                    sessions++;
+                    localStorage.setItem('studySessions', sessions);
+                } else {
+                    timeLeft--;
+                    updateDisplay();
+                }
+            }, 1000);
+        }
+
+        function pauseTimer() {
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 25 * 60;
+            isStudySession = true;
+            document.getElementById('sessionType').innerHTML = 'Focus Time 🎯';
+            updateDisplay();
+        }
+        </script>
         <div class="search-container">
             <input type="text" class="search-box" placeholder="🔍 Search tutorials, projects, resources... (Try: Python, ML, PINNs)">
             <div class="search-results" style="display: none;"></div>

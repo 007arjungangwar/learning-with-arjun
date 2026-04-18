@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Your Certificate | Arjun's Learning Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .certificate-preview {
+            background: white;
+            border: 10px solid #0066cc;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .certificate-preview h1 {
+            font-size: 2rem;
+            margin: 1rem 0;
+        }
+        
+        .certificate-name {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            padding: 0.5rem;
+            border-bottom: 2px solid #0066cc;
+            display: inline-block;
+        }
+        
+        .download-cert {
+            background: #28a745;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 1rem;
+        }
+        
+        .input-group {
+            margin: 1rem 0;
+        }
+        
+        .input-group input {
+            padding: 0.75rem;
+            width: 250px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="blog.html">📝 Blog</a>
+                <a href="projects.html">💻 Projects</a>
+                <a href="resources.html">🎁 Resources</a>
+                <a href="questions.html">💬 Q&A</a>
+                <a href="roadmap.html">🗺️ Roadmap</a>
+                <a href="tracker.html">📊 Progress</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="about.html">👤 About</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="quiz.html">📝 Quiz</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <h1>🎓 Generate Your Completion Certificate</h1>
+        <p>Complete 50% of the roadmap and earn your certificate!</p>
+
+        <div class="input-group">
+            <input type="text" id="studentName" placeholder="Enter your full name" class="form-input">
+        </div>
+
+        <div class="certificate-preview" id="certificate">
+            <div style="position: absolute; top: 10px; left: 10px; font-size: 0.8rem;">Certificate of Completion</div>
+            <div style="position: absolute; top: 10px; right: 10px; font-size: 0.8rem;">No: #<span id="certNumber">001</span></div>
+            <h1>📚 Arjun's Learning Hub</h1>
+            <p>This certificate is proudly presented to</p>
+            <div class="certificate-name" id="certName">[Your Name]</div>
+            <p>for successfully completing the</p>
+            <h2>Data Science & ML Learning Path</h2>
+            <p>with dedication and consistency</p>
+            <br>
+            <p>Date: <span id="certDate"></span></p>
+            <p style="margin-top: 2rem;">_________________</p>
+            <p>Arjun Gangwar<br>Founder</p>
+        </div>
+
+        <button class="download-cert" onclick="generateCertificate()">📥 Download Certificate</button>
+        <button class="btn-secondary" onclick="shareCertificate()">📱 Share on WhatsApp</button>
+
+        <div class="note" style="background: #fff8e7; padding: 1rem; border-radius: 8px; margin-top: 2rem;">
+            <p>⭐ <strong>How to earn this certificate:</strong> Complete 50% of topics in the Progress Tracker. Show your certificate to employers and colleges!</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>Arjun Gangwar</h4>
+                <p>Data Science @ IIT Palakkad</p>
+            </div>
+            <div class="social">
+                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | Learn. Grow. Earn your certificate.</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        document.getElementById('certDate').innerHTML = new Date().toLocaleDateString();
+        document.getElementById('certNumber').innerHTML = Math.floor(Math.random() * 10000);
+        
+        function generateCertificate() {
+            const name = document.getElementById('studentName').value;
+            if(!name) {
+                alert('Please enter your name first!');
+                return;
+            }
+            
+            document.getElementById('certName').innerHTML = name;
+            
+            const element = document.getElementById('certificate');
+            html2canvas(element, {
+                scale: 2,
+                backgroundColor: '#ffffff'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `${name}_certificate.png`;
+                link.href = canvas.toDataURL();
+                link.click();
+                
+                // Save that user generated certificate
+                let certs = JSON.parse(localStorage.getItem('certificates') || '[]');
+                certs.push({name: name, date: new Date().toISOString()});
+                localStorage.setItem('certificates', JSON.stringify(certs));
+            });
+        }
+        
+        function shareCertificate() {
+            const name = document.getElementById('studentName').value;
+            if(!name) {
+                alert('Generate certificate first!');
+                return;
+            }
+            const text = `I just completed the Data Science & ML course at Arjun's Learning Hub! 🎓 Check it out: ${window.location.origin}`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+        }
+    </script>
+</body>
+</html>

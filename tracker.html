@@ -19,6 +19,9 @@
                 <a href="roadmap.html">🗺️ Roadmap</a>
                 <a href="tracker.html">📊 Progress</a>
                 <a href="about.html">👤 About</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="quiz.html">📝 Quiz</a>
             </div>
         </div>
     </nav>
@@ -295,6 +298,100 @@ helpBtn.addEventListener('click', (e) => {
 function closeHelp() {
     helpPopup.classList.remove('active');
 }
+</script>
+<div class="streak-section">
+    <h3>🔥 Study Streak</h3>
+    <div class="streak-display">
+        <div class="streak-count" id="streakCount">0</div>
+        <p>days in a row!</p>
+    </div>
+    <div id="calendar"></div>
+</div>
+
+<style>
+.streak-section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.streak-count {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ff6b35;
+}
+
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 1rem;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #f0f0f0;
+    font-size: 0.75rem;
+}
+
+.calendar-day.studied {
+    background: #4caf50;
+    color: white;
+}
+
+.calendar-day.today {
+    border: 2px solid #0066cc;
+}
+</style>
+
+<script>
+function updateStreak() {
+    let lastStudy = localStorage.getItem('lastStudyDate');
+    let streak = parseInt(localStorage.getItem('studyStreak') || '0');
+    const today = new Date().toDateString();
+    
+    if(lastStudy === today) {
+        // Already studied today
+    } else if(lastStudy === new Date(Date.now() - 86400000).toDateString()) {
+        streak++;
+        localStorage.setItem('studyStreak', streak);
+    } else {
+        streak = 1;
+        localStorage.setItem('studyStreak', streak);
+    }
+    
+    localStorage.setItem('lastStudyDate', today);
+    document.getElementById('streakCount').innerHTML = streak;
+    
+    // Generate calendar
+    const calendarDiv = document.getElementById('calendar');
+    const dates = [];
+    for(let i = 27; i >= 0; i--) {
+        const date = new Date(Date.now() - (i * 86400000));
+        dates.push(date);
+    }
+    
+    calendarDiv.innerHTML = dates.map(date => {
+        const isStudied = localStorage.getItem(`study_${date.toDateString()}`);
+        const isToday = date.toDateString() === today;
+        return `<div class="calendar-day ${isStudied ? 'studied' : ''} ${isToday ? 'today' : ''}">${date.getDate()}</div>`;
+    }).join('');
+}
+
+// Mark today as studied when user visits
+function markStudied() {
+    const today = new Date().toDateString();
+    localStorage.setItem(`study_${today}`, 'true');
+    updateStreak();
+}
+
+markStudied();
 </script>
 </body>
 </html>

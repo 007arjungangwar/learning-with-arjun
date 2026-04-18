@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Study Assistant | Arjun's Learning Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .chat-container {
+            background: white;
+            border-radius: 12px;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        
+        .message {
+            margin: 0.5rem 0;
+            padding: 0.75rem;
+            border-radius: 12px;
+            max-width: 80%;
+        }
+        
+        .user-message {
+            background: #0066cc;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .bot-message {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .chat-input-area {
+            display: flex;
+            padding: 1rem;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .quick-questions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: #f9f9f9;
+        }
+        
+        .quick-btn {
+            padding: 0.5rem 1rem;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="blog.html">📝 Blog</a>
+                <a href="projects.html">💻 Projects</a>
+                <a href="resources.html">🎁 Resources</a>
+                <a href="questions.html">💬 Q&A</a>
+                <a href="roadmap.html">🗺️ Roadmap</a>
+                <a href="tracker.html">📊 Progress</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="about.html">👤 About</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="quiz.html">📝 Quiz</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <h1>🤖 Your AI Study Assistant</h1>
+        <p>Ask me anything about Data Science, ML, Python, or IIT life!</p>
+
+        <div class="chat-container">
+            <div class="quick-questions">
+                <button class="quick-btn" onclick="askQuick('How to start Python?')">🐍 How to start Python?</button>
+                <button class="quick-btn" onclick="askQuick('What is ML?')">🤖 What is ML?</button>
+                <button class="quick-btn" onclick="askQuick('Best resources?')">📚 Best resources?</button>
+                <button class="quick-btn" onclick="askQuick('IIT preparation?')">🎓 IIT preparation?</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message bot-message">👋 Hi! I'm your study assistant. Ask me anything about Data Science, Machine Learning, or how to succeed in your learning journey!</div>
+            </div>
+            
+            <div class="chat-input-area">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type your question here..." onkeypress="if(event.key==='Enter') sendMessage()">
+                <button onclick="sendMessage()" style="margin-left: 0.5rem; padding: 0.75rem 1.5rem;">Send ➤</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>Arjun Gangwar</h4>
+                <p>Data Science @ IIT Palakkad</p>
+            </div>
+            <div class="social">
+                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | AI Assistant - Your 24/7 study buddy</p>
+    </footer>
+
+    <script>
+        function addMessage(text, isUser) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            messageDiv.innerHTML = text;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function getBotResponse(question) {
+            const q = question.toLowerCase();
+            
+            if(q.includes('python') || q.includes('how to start')) {
+                return "🐍 Start Python with free resources: Automate the Boring Stuff book, freeCodeCamp YouTube (4-hour course), and practice on HackerRank. Start today, even 30 minutes daily!";
+            }
+            else if(q.includes('machine learning') || q.includes('ml')) {
+                return "🤖 Machine Learning is teaching computers to learn from data instead of programming rules. Start with Andrew Ng's course on YouTube, then practice on Kaggle!";
+            }
+            else if(q.includes('resource') || q.includes('course')) {
+                return "📚 Best free resources: CS50 (Harvard), Fast.ai, Kaggle Learn, Google's ML Crash Course. All free and excellent!";
+            }
+            else if(q.includes('iit') || q.includes('college') || q.includes('admission')) {
+                return "🎓 For IIT: Focus on JEE Advanced preparation. But remember - skills matter more than college. Many successful data scientists are from normal colleges!";
+            }
+            else if(q.includes('project') || q.includes('portfolio')) {
+                return "💡 Start with small projects: Titanic survival prediction, Iris classification, then move to web scraping, API projects, and finally deep learning projects. Put everything on GitHub!";
+            }
+            else if(q.includes('job') || q.includes('career') || q.includes('placement')) {
+                return "💼 Build a strong GitHub portfolio, contribute to open source, practice LeetCode, and network on LinkedIn. Many companies hire based on skills, not degrees!";
+            }
+            else if(q.includes('pinn') || q.includes('physics')) {
+                return "🔬 PINNs are Physics-Informed Neural Networks! They combine deep learning with physics equations. Perfect for scientific ML. Check my projects section for examples!";
+            }
+            else {
+                return "Great question! 💡 Check out my Blog and Resources sections for detailed tutorials. Or ask more specifically - I'm here to help! You can also post your question on the Q&A page for a detailed response.";
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const question = input.value.trim();
+            if(!question) return;
+            
+            addMessage(question, true);
+            input.value = '';
+            
+            setTimeout(() => {
+                const response = getBotResponse(question);
+                addMessage(response, false);
+            }, 500);
+        }
+        
+        function askQuick(question) {
+            document.getElementById('chatInput').value = question;
+            sendMessage();
+        }
+    </script>
+</body>
+</html>
