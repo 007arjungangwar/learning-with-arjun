@@ -23,6 +23,10 @@
     </nav>
 
     <main>
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="🔍 Search tutorials, projects, resources... (Try: Python, ML, PINNs)">
+            <div class="search-results" style="display: none;"></div>
+        </div>
         <section class="hero">
             <h1>Free Data Science & ML <span class="highlight">Tutorials</span></h1>
             <p class="subtitle">Simple explanations. Real projects. No fluff. Made for students by a student at IIT Palakkad.</p>
@@ -110,5 +114,73 @@
         </div>
         <p class="copyright">© 2024 Arjun Gangwar | Built for students, by a student</p>
     </footer>
+<script>
+// Simple search functionality
+const searchBox = document.querySelector('.search-box');
+const resultsDiv = document.querySelector('.search-results');
+
+const content = [
+    { title: "How to Start Learning Python", url: "posts/python-beginners-guide.html", category: "Blog" },
+    { title: "What is Machine Learning?", url: "posts/what-is-ml.html", category: "Blog" },
+    { title: "What are PINNs?", url: "posts/pinns-explained.html", category: "Blog" },
+    { title: "PINNs for Richards' Equation", url: "projects.html", category: "Project" },
+    { title: "Python Cheat Sheet", url: "resources.html", category: "Resource" },
+    { title: "ML Algorithms Mind Map", url: "resources.html", category: "Resource" },
+    { title: "Data Science Roadmap", url: "roadmap.html", category: "Guide" }
+];
+
+searchBox.addEventListener('input', function() {
+    const query = this.value.toLowerCase();
+    if (query.length < 2) {
+        resultsDiv.style.display = 'none';
+        return;
+    }
+    
+    const matches = content.filter(item => 
+        item.title.toLowerCase().includes(query)
+    );
+    
+    if (matches.length > 0) {
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = matches.map(match => `
+            <div class="search-result-item" onclick="window.location.href='${match.url}'">
+                <strong>${match.title}</strong><br>
+                <small style="color: #666;">${match.category}</small>
+            </div>
+        `).join('');
+    } else {
+        resultsDiv.style.display = 'block';
+        resultsDiv.innerHTML = '<div class="search-result-item">No results found</div>';
+    }
+});
+
+// Hide results when clicking outside
+document.addEventListener('click', function(e) {
+    if (!searchBox.contains(e.target)) {
+        resultsDiv.style.display = 'none';
+    }
+});
+</script>
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+
+<script>
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const btn = document.querySelector('.dark-mode-toggle');
+    if (document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '☀️';
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        btn.innerHTML = '🌙';
+        localStorage.setItem('darkMode', 'disabled');
+    }
+}
+
+// Load dark mode preference
+if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+    document.querySelector('.dark-mode-toggle').innerHTML = '☀️';
+}
+</script>
 </body>
 </html>

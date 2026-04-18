@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Progress Tracker | Arjun's Learning Hub</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="projects.html">Projects</a>
+                <a href="resources.html">Free Resources</a>
+                <a href="questions.html">Q&A</a>
+                <a href="roadmap.html">Roadmap</a>
+                <a href="tracker.html">📊 Progress</a>
+                <a href="about.html">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <h1>📊 Your Learning Progress Tracker</h1>
+        <p>Check what you've learned. Stay motivated. Keep going! 💪</p>
+
+        <div class="progress-overall">
+            <div class="progress-circle">
+                <span id="progress-percent">0</span>%
+            </div>
+            <p>Overall Progress</p>
+        </div>
+
+        <div class="tracker-categories">
+            <div class="category">
+                <h3>🐍 Python Basics</h3>
+                <div class="topic-list">
+                    <label class="topic">
+                        <input type="checkbox" data-category="python"> Variables & Data Types
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="python"> Loops & Conditionals
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="python"> Functions
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="python"> Lists & Dictionaries
+                    </label>
+                </div>
+                <div class="category-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="python-progress"></div>
+                    </div>
+                    <span id="python-count">0/4</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h3>📊 Data Analysis</h3>
+                <div class="topic-list">
+                    <label class="topic">
+                        <input type="checkbox" data-category="pandas"> NumPy Basics
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="pandas"> Pandas DataFrames
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="pandas"> Data Cleaning
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="pandas"> Matplotlib Visualization
+                    </label>
+                </div>
+                <div class="category-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="pandas-progress"></div>
+                    </div>
+                    <span id="pandas-count">0/4</span>
+                </div>
+            </div>
+
+            <div class="category">
+                <h3>🤖 Machine Learning</h3>
+                <div class="topic-list">
+                    <label class="topic">
+                        <input type="checkbox" data-category="ml"> Regression
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="ml"> Classification
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="ml"> Decision Trees
+                    </label>
+                    <label class="topic">
+                        <input type="checkbox" data-category="ml"> Clustering
+                    </label>
+                </div>
+                <div class="category-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ml-progress"></div>
+                    </div>
+                    <span id="ml-count">0/4</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="tracker-actions">
+            <button class="btn-primary" id="reset-progress">Reset All Progress</button>
+            <button class="btn-secondary" id="save-progress">Save Progress</button>
+        </div>
+
+        <div class="motivation-message" id="motivation-msg">
+            🌟 Keep going! Every small step counts.
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>Arjun Gangwar</h4>
+                <p>Data Science @ IIT Palakkad</p>
+            </div>
+            <div class="social">
+                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
+                <a href="#">💼 LinkedIn</a>
+                <a href="#">🐦 Twitter</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | Track your progress. Stay consistent.</p>
+    </footer>
+
+    <script>
+        // Load saved progress
+        function loadProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox, index) => {
+                const saved = localStorage.getItem(`progress_${index}`);
+                if (saved === 'true') {
+                    checkbox.checked = true;
+                }
+            });
+            updateAllProgress();
+        }
+
+        // Update progress for all categories
+        function updateAllProgress() {
+            const categories = ['python', 'pandas', 'ml'];
+            let totalChecked = 0;
+            let totalTopics = 0;
+
+            categories.forEach(cat => {
+                const checkboxes = document.querySelectorAll(`input[data-category="${cat}"]`);
+                const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+                const percent = (checked / checkboxes.length) * 100;
+                
+                const fillBar = document.getElementById(`${cat}-progress`);
+                if (fillBar) fillBar.style.width = `${percent}%`;
+                
+                document.getElementById(`${cat}-count`).innerHTML = `${checked}/${checkboxes.length}`;
+                
+                totalChecked += checked;
+                totalTopics += checkboxes.length;
+            });
+
+            const overallPercent = Math.round((totalChecked / totalTopics) * 100);
+            document.getElementById('progress-percent').innerHTML = overallPercent;
+            
+            // Motivation message
+            const msgDiv = document.getElementById('motivation-msg');
+            if (overallPercent === 100) {
+                msgDiv.innerHTML = '🎉 AMAZING! You completed everything! Now build projects and help others! 🎉';
+            } else if (overallPercent >= 50) {
+                msgDiv.innerHTML = '🔥 You\'re on fire! Halfway there! Keep pushing! 🔥';
+            } else if (overallPercent >= 25) {
+                msgDiv.innerHTML = '💪 Great start! Consistency is key. You got this! 💪';
+            } else if (overallPercent > 0) {
+                msgDiv.innerHTML = '🌟 First step complete! Every expert was once a beginner. 🌟';
+            } else {
+                msgDiv.innerHTML = '🌟 Start by checking what you know. Every small step counts! 🌟';
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach((checkbox, index) => {
+                localStorage.setItem(`progress_${index}`, checkbox.checked);
+            });
+            alert('Progress saved! Come back anytime to continue.');
+        }
+
+        // Reset progress
+        function resetProgress() {
+            if (confirm('Are you sure? This will reset all your learning progress.')) {
+                const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach((checkbox, index) => {
+                    checkbox.checked = false;
+                    localStorage.removeItem(`progress_${index}`);
+                });
+                updateAllProgress();
+                alert('Progress reset. Time to start fresh!');
+            }
+        }
+
+        // Event listeners
+        document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+            cb.addEventListener('change', updateAllProgress);
+        });
+
+        document.getElementById('save-progress').addEventListener('click', saveProgress);
+        document.getElementById('reset-progress').addEventListener('click', resetProgress);
+
+        // Initialize
+        loadProgress();
+    </script>
+<button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
+
+<script>
+function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+    const btn = document.querySelector('.dark-mode-toggle');
+    if (document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '☀️';
+        localStorage.setItem('darkMode', 'enabled');
+    } else {
+        btn.innerHTML = '🌙';
+        localStorage.setItem('darkMode', 'disabled');
+    }
+}
+
+// Load dark mode preference
+if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+    document.querySelector('.dark-mode-toggle').innerHTML = '☀️';
+}
+</script>
+</body>
+</html>
