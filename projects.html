@@ -26,6 +26,8 @@
                 <a href="forum.html">🗣️ Forum</a>
                 <a href="videos.html">📹 Videos</a>
                 <a href="admin.html">📊 Admin</a>
+                <a href="chat.html">💬 Live Chat</a>
+                <a href="profile.html">👤 Profile</a>
             </div>
         </div>
     </nav>
@@ -56,6 +58,53 @@
 
     <footer>
         <p>© 2024 Your Name | Free resources for students</p>
+        <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem;">
+            👥 Live Visitors: <span id="visitorCount">0</span> | 
+            📅 Today's Visitors: <span id="todayCount">0</span>
+        </div>
+
+        <script>
+        // Simple visitor counter
+        let visitorId = localStorage.getItem('visitorId');
+        if(!visitorId) {
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random();
+            localStorage.setItem('visitorId', visitorId);
+        }
+
+        // Track active visitors
+        let activeVisitors = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
+        activeVisitors[visitorId] = Date.now();
+        localStorage.setItem('activeVisitors', JSON.stringify(activeVisitors));
+
+        // Count active visitors (last 5 minutes)
+        function updateCounters() {
+            const now = Date.now();
+            let active = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
+            let count = 0;
+            Object.keys(active).forEach(id => {
+                if(now - active[id] < 300000) { // 5 minutes
+                    count++;
+                } else {
+                    delete active[id];
+                }
+            });
+            localStorage.setItem('activeVisitors', JSON.stringify(active));
+            document.getElementById('visitorCount').innerHTML = count;
+            
+            // Today's visitors
+            const today = new Date().toDateString();
+            let todayVisitors = JSON.parse(localStorage.getItem('todayVisitors') || '{}');
+            if(!todayVisitors[today]) {
+                todayVisitors[today] = new Set();
+            }
+            todayVisitors[today].add(visitorId);
+            localStorage.setItem('todayVisitors', JSON.stringify(todayVisitors));
+            document.getElementById('todayCount').innerHTML = todayVisitors[today].size;
+        }
+
+        setInterval(updateCounters, 60000);
+        updateCounters();
+        </script>
     </footer>
 <script>
 // Simple search functionality

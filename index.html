@@ -6,6 +6,36 @@
     <title>Arjun's Learning Hub | Free DS & ML Tutorials</title>
     <link rel="stylesheet" href="style.css">
 </head>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0066cc">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<script>
+// Register Service Worker for PWA
+if('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(() => {
+        console.log('PWA installed successfully!');
+    });
+}
+
+// Show install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const installBtn = document.createElement('button');
+    installBtn.innerHTML = '📱 Install App';
+    installBtn.className = 'install-btn';
+    installBtn.onclick = () => {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => {
+            installBtn.remove();
+        });
+    };
+    document.body.appendChild(installBtn);
+});
+</script>
 <body>
     <nav>
         <div class="nav-container">
@@ -26,6 +56,8 @@
                 <a href="forum.html">🗣️ Forum</a>
                 <a href="videos.html">📹 Videos</a>
                 <a href="admin.html">📊 Admin</a>
+                <a href="chat.html">💬 Live Chat</a>
+                <a href="profile.html">👤 Profile</a>
             </div>
         </div>
     </nav>
@@ -186,6 +218,53 @@
             </div>
         </div>
         <p class="copyright">© 2024 Arjun Gangwar | Built for students, by a student</p>
+        <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem;">
+            👥 Live Visitors: <span id="visitorCount">0</span> | 
+            📅 Today's Visitors: <span id="todayCount">0</span>
+        </div>
+
+        <script>
+        // Simple visitor counter
+        let visitorId = localStorage.getItem('visitorId');
+        if(!visitorId) {
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random();
+            localStorage.setItem('visitorId', visitorId);
+        }
+
+        // Track active visitors
+        let activeVisitors = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
+        activeVisitors[visitorId] = Date.now();
+        localStorage.setItem('activeVisitors', JSON.stringify(activeVisitors));
+
+        // Count active visitors (last 5 minutes)
+        function updateCounters() {
+            const now = Date.now();
+            let active = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
+            let count = 0;
+            Object.keys(active).forEach(id => {
+                if(now - active[id] < 300000) { // 5 minutes
+                    count++;
+                } else {
+                    delete active[id];
+                }
+            });
+            localStorage.setItem('activeVisitors', JSON.stringify(active));
+            document.getElementById('visitorCount').innerHTML = count;
+            
+            // Today's visitors
+            const today = new Date().toDateString();
+            let todayVisitors = JSON.parse(localStorage.getItem('todayVisitors') || '{}');
+            if(!todayVisitors[today]) {
+                todayVisitors[today] = new Set();
+            }
+            todayVisitors[today].add(visitorId);
+            localStorage.setItem('todayVisitors', JSON.stringify(todayVisitors));
+            document.getElementById('todayCount').innerHTML = todayVisitors[today].size;
+        }
+
+        setInterval(updateCounters, 60000);
+        updateCounters();
+        </script>
     </footer>
 <script>
 // Simple search functionality
@@ -275,6 +354,41 @@ helpBtn.addEventListener('click', (e) => {
 
 function closeHelp() {
     helpPopup.classList.remove('active');
+}
+</script>
+<div class="social-login" style="text-align: center; margin: 1rem 0;">
+    <button onclick="socialLogin('google')" style="background: #db4437;">🔴 Continue with Google</button>
+    <button onclick="socialLogin('github')" style="background: #333;">🐙 Continue with GitHub</button>
+</div>
+
+<script>
+function socialLogin(provider) {
+    // Store login state
+    localStorage.setItem('loggedIn', 'true');
+    localStorage.setItem('loginProvider', provider);
+    localStorage.setItem('loginTime', new Date().toISOString());
+    
+    // Get user email (demo - in real implementation, use OAuth)
+    const email = prompt(`Enter your ${provider} email:`);
+    if(email) {
+        localStorage.setItem('userEmail', email);
+        alert(`Welcome! You're now logged in with ${provider}.`);
+        location.reload();
+    }
+}
+
+// Check login status
+if(localStorage.getItem('loggedIn')) {
+    const loginDiv = document.querySelector('.social-login');
+    if(loginDiv) {
+        loginDiv.innerHTML = `<p>✅ Logged in as ${localStorage.getItem('userEmail')} | <a href="#" onclick="logout()">Logout</a></p>`;
+    }
+}
+
+function logout() {
+    localStorage.removeItem('loggedIn');
+    localStorage.removeItem('userEmail');
+    location.reload();
 }
 </script>
 </body>

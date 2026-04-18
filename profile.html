@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Arjun's Learning Hub</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+        
+        .avatar-selector {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        
+        .avatar-option {
+            font-size: 2rem;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        
+        .avatar-option:hover {
+            background: rgba(255,255,255,0.2);
+            transform: scale(1.1);
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .edit-btn {
+            background: #0066cc;
+            color: white;
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="blog.html">📝 Blog</a>
+                <a href="projects.html">💻 Projects</a>
+                <a href="courses.html">💰 Courses</a>
+                <a href="forum.html">🗣️ Forum</a>
+                <a href="videos.html">📹 Videos</a>
+                <a href="resources.html">🎁 Resources</a>
+                <a href="questions.html">💬 Q&A</a>
+                <a href="roadmap.html">🗺️ Roadmap</a>
+                <a href="tracker.html">📊 Progress</a>
+                <a href="certificate.html">🎓 Certificate</a>
+                <a href="assistant.html">🤖 AI Assistant</a>
+                <a href="quiz.html">📝 Quiz</a>
+                <a href="profile.html">👤 Profile</a>
+                <a href="admin.html">📊 Admin</a>
+                <a href="about.html">📖 About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="profile-header">
+            <div class="avatar" id="avatar" onclick="showAvatarSelector()">
+                🧑‍🎓
+            </div>
+            <h2 id="displayName">Student</h2>
+            <p>Member since <span id="joinDate"></span></p>
+            <button class="edit-btn" onclick="editProfile()">✏️ Edit Profile</button>
+        </div>
+
+        <div id="avatarSelector" style="display: none;" class="avatar-selector">
+            <div class="avatar-option" onclick="changeAvatar('🧑‍🎓')">🧑‍🎓</div>
+            <div class="avatar-option" onclick="changeAvatar('👨‍💻')">👨‍💻</div>
+            <div class="avatar-option" onclick="changeAvatar('👩‍💻')">👩‍💻</div>
+            <div class="avatar-option" onclick="changeAvatar('🧠')">🧠</div>
+            <div class="avatar-option" onclick="changeAvatar('📚')">📚</div>
+            <div class="avatar-option" onclick="changeAvatar('⭐')">⭐</div>
+            <div class="avatar-option" onclick="changeAvatar('🚀')">🚀</div>
+            <div class="avatar-option" onclick="changeAvatar('🎯')">🎯</div>
+            <div class="avatar-option" onclick="changeAvatar('💡')">💡</div>
+            <div class="avatar-option" onclick="changeAvatar('🔥')">🔥</div>
+            <div class="avatar-option" onclick="changeAvatar('🏆')">🏆</div>
+            <div class="avatar-option" onclick="changeAvatar('🎓')">🎓</div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-box">
+                <div style="font-size: 2rem;" id="studyStreak">0</div>
+                <div>Day Streak 🔥</div>
+            </div>
+            <div class="stat-box">
+                <div style="font-size: 2rem;" id="coursesCompleted">0</div>
+                <div>Courses 📚</div>
+            </div>
+            <div class="stat-box">
+                <div style="font-size: 2rem;" id="certificatesEarned">0</div>
+                <div>Certificates 🎓</div>
+            </div>
+            <div class="stat-box">
+                <div style="font-size: 2rem;" id="forumPosts">0</div>
+                <div>Forum Posts 💬</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>📊 Your Learning Progress</h3>
+            <div id="userProgress"></div>
+        </div>
+
+        <div class="card">
+            <h3>🏆 Achievements</h3>
+            <div id="userAchievements"></div>
+        </div>
+
+        <div class="card">
+            <h3>📜 Your Certificates</h3>
+            <div id="userCertificates"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>Arjun Gangwar</h4>
+                <p>Data Science @ IIT Palakkad</p>
+            </div>
+            <div class="social">
+                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | Your learning journey starts here</p>
+        <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem;">
+            👥 Live Visitors: <span id="visitorCount">0</span> | 
+            📅 Today's Visitors: <span id="todayCount">0</span>
+        </div>
+
+        <script>
+        // Simple visitor counter
+        let visitorId = localStorage.getItem('visitorId');
+        if(!visitorId) {
+            visitorId = 'visitor_' + Date.now() + '_' + Math.random();
+            localStorage.setItem('visitorId', visitorId);
+        }
+
+        // Track active visitors
+        let activeVisitors = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
+        activeVisitors[visitorId] = Date.now();
+        localStorage.setItem('activeVisitors', JSON.stringify(activeVisitors));
+
+        // Count active visitors (last 5 minutes)
+        function updateCounters() {
+            const now = Date.now();
+            let active = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
+            let count = 0;
+            Object.keys(active).forEach(id => {
+                if(now - active[id] < 300000) { // 5 minutes
+                    count++;
+                } else {
+                    delete active[id];
+                }
+            });
+            localStorage.setItem('activeVisitors', JSON.stringify(active));
+            document.getElementById('visitorCount').innerHTML = count;
+            
+            // Today's visitors
+            const today = new Date().toDateString();
+            let todayVisitors = JSON.parse(localStorage.getItem('todayVisitors') || '{}');
+            if(!todayVisitors[today]) {
+                todayVisitors[today] = new Set();
+            }
+            todayVisitors[today].add(visitorId);
+            localStorage.setItem('todayVisitors', JSON.stringify(todayVisitors));
+            document.getElementById('todayCount').innerHTML = todayVisitors[today].size;
+        }
+
+        setInterval(updateCounters, 60000);
+        updateCounters();
+        </script>
+    </footer>
+
+    <script>
+        // Load user profile
+        function loadProfile() {
+            const user = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            document.getElementById('displayName').innerHTML = user.name || 'Student';
+            document.getElementById('avatar').innerHTML = user.avatar || '🧑‍🎓';
+            document.getElementById('joinDate').innerHTML = user.joinDate || new Date().toLocaleDateString();
+            
+            // Load stats
+            document.getElementById('studyStreak').innerHTML = localStorage.getItem('studyStreak') || 0;
+            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+            document.getElementById('coursesCompleted').innerHTML = enrollments.filter(e => e.type === 'premium').length;
+            
+            const certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
+            document.getElementById('certificatesEarned').innerHTML = certificates.length;
+            
+            const forumTopics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
+            document.getElementById('forumPosts').innerHTML = forumTopics.filter(t => t.author === user.name).length;
+            
+            // Progress
+            const progress = JSON.parse(localStorage.getItem('learningProgress') || '{}');
+            const topicsCompleted = Object.values(progress).filter(v => v === true).length;
+            document.getElementById('userProgress').innerHTML = `
+                <div class="progress-bar" style="margin: 1rem 0;">
+                    <div class="progress-fill" style="width: ${topicsCompleted}%;"></div>
+                </div>
+                <p>${topicsCompleted}% complete on your learning path!</p>
+            `;
+            
+            // Achievements
+            const achievements = [];
+            if(topicsCompleted >= 25) achievements.push('🌱 Beginner Explorer');
+            if(topicsCompleted >= 50) achievements.push('📚 Knowledge Seeker');
+            if(topicsCompleted >= 75) achievements.push('🔥 Learning Machine');
+            if(topicsCompleted >= 100) achievements.push('🏆 Master Learner');
+            if(localStorage.getItem('studyStreak') >= 7) achievements.push('⚡ Weekly Warrior');
+            if(localStorage.getItem('studyStreak') >= 30) achievements.push('💪 Unstoppable');
+            
+            document.getElementById('userAchievements').innerHTML = achievements.length ? 
+                achievements.map(a => `<span class="badge">${a}</span>`).join('') :
+                '<p>Complete topics to earn achievements! 🎯</p>';
+            
+            // Certificates
+            document.getElementById('userCertificates').innerHTML = certificates.length ?
+                certificates.map(c => `<p>🎓 ${c.name} - ${new Date(c.date).toLocaleDateString()}</p>`).join('') :
+                '<p>No certificates yet. Complete courses to earn! 📜</p>';
+        }
+        
+        function editProfile() {
+            const newName = prompt('Enter your name:', document.getElementById('displayName').innerHTML);
+            if(newName) {
+                const user = JSON.parse(localStorage.getItem('userProfile') || '{}');
+                user.name = newName;
+                if(!user.joinDate) user.joinDate = new Date().toLocaleDateString();
+                localStorage.setItem('userProfile', JSON.stringify(user));
+                loadProfile();
+            }
+        }
+        
+        function showAvatarSelector() {
+            const selector = document.getElementById('avatarSelector');
+            selector.style.display = selector.style.display === 'none' ? 'grid' : 'none';
+        }
+        
+        function changeAvatar(avatar) {
+            const user = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            user.avatar = avatar;
+            localStorage.setItem('userProfile', JSON.stringify(user));
+            document.getElementById('avatar').innerHTML = avatar;
+            document.getElementById('avatarSelector').style.display = 'none';
+        }
+        
+        loadProfile();
+    </script>
+</body>
+</html>
