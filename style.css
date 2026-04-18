@@ -574,3 +574,133 @@ body.dark-mode .search-box {
     color: white;
     border-color: #444;
 }
+
+
+
+/* Like/Reaction System */
+.reaction-section {
+    background: #f5f7fa;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.reaction-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.reaction-btn {
+    background: white;
+    border: 1px solid #ddd;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.reaction-btn:hover {
+    transform: scale(1.05);
+    background: #0066cc;
+    color: white;
+}
+
+.reaction-count {
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
+.badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    margin: 0.25rem;
+    font-size: 0.875rem;
+}
+
+.achievements {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    text-align: center;
+}
+
+.share-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    margin: 1rem 0;
+}
+
+.share-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.share-wa {
+    background: #25D366;
+    color: white;
+}
+
+.share-twitter {
+    background: #1DA1F2;
+    color: white;
+}
+
+.share-linkedin {
+    background: #0077B5;
+    color: white;
+}
+
+/* Floating Help Button */
+.help-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #0066cc;
+    color: white;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    z-index: 1000;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.help-btn:hover {
+    transform: scale(1.1);
+    background: #0052a3;
+}
+
+.help-popup {
+    position: fixed;
+    bottom: 100px;
+    left: 20px;
+    background: white;
+    width: 300px;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    display: none;
+    z-index: 1001;
+}
+
+.help-popup.active {
+    display: block;
+}

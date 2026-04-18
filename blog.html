@@ -32,6 +32,29 @@
         <p>Free tutorials to help you learn Data Science and Machine Learning.</p>
 
         <div class="blog-list">
+
+            <div class="popular-posts">
+                <h3>🔥 Most Popular This Week</h3>
+                <div id="popular-list"></div>
+            </div>
+
+            <script>
+            // Track page views
+            const postViews = JSON.parse(localStorage.getItem('postViews') || '{}');
+            const currentPost = 'python-guide'; // Change for each post
+            postViews[currentPost] = (postViews[currentPost] || 0) + 1;
+            localStorage.setItem('postViews', JSON.stringify(postViews));
+
+            // Show popular posts
+            const sorted = Object.entries(postViews).sort((a,b) => b[1] - a[1]).slice(0,3);
+            const popularDiv = document.getElementById('popular-list');
+            if(popularDiv) {
+                popularDiv.innerHTML = sorted.map(([post, views]) => 
+                    `<p>📖 ${post.replace('-', ' ')} - ${views} views</p>`
+                ).join('');
+            }
+            </script>
+
             <div class="post-item">
                 <h2><a href="posts/post1.html">How to Start Learning Python — Free Resources</a></h2>
                 <p class="post-date">April 19, 2024</p>
@@ -118,6 +141,28 @@ function toggleDarkMode() {
 if (localStorage.getItem('darkMode') === 'enabled') {
     document.body.classList.add('dark-mode');
     document.querySelector('.dark-mode-toggle').innerHTML = '☀️';
+}
+</script>
+<a href="questions.html" class="help-btn">💬</a>
+
+<div class="help-popup" id="helpPopup">
+    <h4>Need help? 🙋‍♂️</h4>
+    <p>Go to the <a href="questions.html">Q&A page</a> to ask your question. I reply within 24 hours!</p>
+    <button onclick="closeHelp()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem;">Close</button>
+</div>
+
+<script>
+const helpBtn = document.querySelector('.help-btn');
+const helpPopup = document.getElementById('helpPopup');
+
+helpBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    helpPopup.classList.toggle('active');
+    setTimeout(() => helpPopup.classList.remove('active'), 5000);
+});
+
+function closeHelp() {
+    helpPopup.classList.remove('active');
 }
 </script>
 </body>

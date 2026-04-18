@@ -160,5 +160,27 @@ if (localStorage.getItem('darkMode') === 'enabled') {
     document.querySelector('.dark-mode-toggle').innerHTML = '☀️';
 }
 </script>
+<a href="questions.html" class="help-btn">💬</a>
+
+<div class="help-popup" id="helpPopup">
+    <h4>Need help? 🙋‍♂️</h4>
+    <p>Go to the <a href="questions.html">Q&A page</a> to ask your question. I reply within 24 hours!</p>
+    <button onclick="closeHelp()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem;">Close</button>
+</div>
+
+<script>
+const helpBtn = document.querySelector('.help-btn');
+const helpPopup = document.getElementById('helpPopup');
+
+helpBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    helpPopup.classList.toggle('active');
+    setTimeout(() => helpPopup.classList.remove('active'), 5000);
+});
+
+function closeHelp() {
+    helpPopup.classList.remove('active');
+}
+</script>
 </body>
 </html>

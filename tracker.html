@@ -24,6 +24,42 @@
     </nav>
 
     <main>
+        <div class="achievements">
+            <h3>🏆 Your Achievements</h3>
+            <div class="badges" id="badges-container">
+                <!-- Badges will appear here -->
+            </div>
+        </div>
+
+        <script>
+        function checkAchievements() {
+            const totalProgress = parseInt(document.getElementById('progress-percent').innerText);
+            const badgesDiv = document.getElementById('badges-container');
+            let badges = '';
+            
+            if(totalProgress >= 10) {
+                badges += '<span class="badge">🌱 Beginner</span>';
+            }
+            if(totalProgress >= 25) {
+                badges += '<span class="badge">📚 Learning</span>';
+            }
+            if(totalProgress >= 50) {
+                badges += '<span class="badge">🔥 On Fire</span>';
+            }
+            if(totalProgress >= 75) {
+                badges += '<span class="badge">⭐ Almost There</span>';
+            }
+            if(totalProgress >= 100) {
+                badges += '<span class="badge">🏆 Master</span>';
+            }
+            
+            badgesDiv.innerHTML = badges || '<p>Complete topics to earn badges! 🎯</p>';
+        }
+
+        // Call this after updating progress
+        // Add this line inside updateAllProgress() function:
+        // checkAchievements();
+        </script>
         <h1>📊 Your Learning Progress Tracker</h1>
         <p>Check what you've learned. Stay motivated. Keep going! 💪</p>
 
@@ -236,6 +272,28 @@ function toggleDarkMode() {
 if (localStorage.getItem('darkMode') === 'enabled') {
     document.body.classList.add('dark-mode');
     document.querySelector('.dark-mode-toggle').innerHTML = '☀️';
+}
+</script>
+<a href="questions.html" class="help-btn">💬</a>
+
+<div class="help-popup" id="helpPopup">
+    <h4>Need help? 🙋‍♂️</h4>
+    <p>Go to the <a href="questions.html">Q&A page</a> to ask your question. I reply within 24 hours!</p>
+    <button onclick="closeHelp()" style="margin-top: 0.5rem; padding: 0.25rem 0.5rem;">Close</button>
+</div>
+
+<script>
+const helpBtn = document.querySelector('.help-btn');
+const helpPopup = document.getElementById('helpPopup');
+
+helpBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    helpPopup.classList.toggle('active');
+    setTimeout(() => helpPopup.classList.remove('active'), 5000);
+});
+
+function closeHelp() {
+    helpPopup.classList.remove('active');
 }
 </script>
 </body>

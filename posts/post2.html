@@ -53,5 +53,29 @@
     <footer>
         <p>© 2024 Your Name | Free resources for students</p>
     </footer>
+<div class="share-buttons">
+    <button class="share-btn share-wa" onclick="shareWhatsApp()">📱 Share on WhatsApp</button>
+    <button class="share-btn share-twitter" onclick="shareTwitter()">🐦 Share on Twitter</button>
+    <button class="share-btn share-linkedin" onclick="shareLinkedIn()">💼 Share on LinkedIn</button>
+</div>
+
+<script>
+function shareWhatsApp() {
+    const url = window.location.href;
+    const text = "Check out this helpful tutorial!";
+    window.open(`https://wa.me/?text=${text} ${url}`, '_blank');
+}
+
+function shareTwitter() {
+    const url = window.location.href;
+    const text = "Just read this helpful tutorial!";
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
+}
+
+function shareLinkedIn() {
+    const url = window.location.href;
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}`, '_blank');
+}
+</script>
 </body>
 </html>
