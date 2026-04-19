@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="auth-check.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | Arjun's Learning Hub</title>
     <link rel="stylesheet" href="style.css">
+    <script src="auth-check.js"></script>
     <style>
         .profile-header {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -27,32 +27,6 @@
             justify-content: center;
             font-size: 3rem;
             cursor: pointer;
-            transition: transform 0.3s;
-        }
-        
-        .avatar:hover {
-            transform: scale(1.1);
-        }
-        
-        .avatar-selector {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .avatar-option {
-            font-size: 2rem;
-            padding: 0.5rem;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.2s;
-        }
-        
-        .avatar-option:hover {
-            background: rgba(255,255,255,0.2);
-            transform: scale(1.1);
         }
         
         .profile-stats {
@@ -67,27 +41,47 @@
             padding: 1rem;
             border-radius: 12px;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            margin: 0.25rem;
         }
         
         .edit-btn {
             background: #0066cc;
             color: white;
-            padding: 0.5rem 1rem;
             border: none;
+            padding: 0.5rem 1rem;
             border-radius: 8px;
             cursor: pointer;
+            margin-top: 1rem;
         }
     </style>
 </head>
-<script>
-// This ensures navigation updates on every page
-updateUIForUser();
-</script>
 <body>
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
-            <div class="nav-links" id="mainNav">
+            <div class="nav-links">
                 <a href="index.html">🏠 Home</a>
                 <a href="blog.html">📝 Blog</a>
                 <a href="projects.html">💻 Projects</a>
@@ -97,6 +91,7 @@ updateUIForUser();
                 <a href="resources.html">🎁 Resources</a>
                 <a href="roadmap.html">🗺️ Roadmap</a>
                 <a href="quiz.html">📝 Quiz</a>
+                <a href="profile.html">👤 Profile</a>
                 <a href="about.html">📖 About</a>
             </div>
         </div>
@@ -104,61 +99,50 @@ updateUIForUser();
 
     <main>
         <div class="profile-header">
-            <div class="avatar" id="avatar" onclick="showAvatarSelector()">
-                🧑‍🎓
-            </div>
-            <h2 id="displayName">Student</h2>
-            <p>Member since <span id="joinDate"></span></p>
+            <div class="avatar" id="avatar">🧑‍🎓</div>
+            <h2 id="displayName">Loading...</h2>
+            <p id="userEmail">Loading...</p>
+            <p>Member since <span id="joinDate">Loading...</span></p>
             <button class="edit-btn" onclick="editProfile()">✏️ Edit Profile</button>
-        </div>
-
-        <div id="avatarSelector" style="display: none;" class="avatar-selector">
-            <div class="avatar-option" onclick="changeAvatar('🧑‍🎓')">🧑‍🎓</div>
-            <div class="avatar-option" onclick="changeAvatar('👨‍💻')">👨‍💻</div>
-            <div class="avatar-option" onclick="changeAvatar('👩‍💻')">👩‍💻</div>
-            <div class="avatar-option" onclick="changeAvatar('🧠')">🧠</div>
-            <div class="avatar-option" onclick="changeAvatar('📚')">📚</div>
-            <div class="avatar-option" onclick="changeAvatar('⭐')">⭐</div>
-            <div class="avatar-option" onclick="changeAvatar('🚀')">🚀</div>
-            <div class="avatar-option" onclick="changeAvatar('🎯')">🎯</div>
-            <div class="avatar-option" onclick="changeAvatar('💡')">💡</div>
-            <div class="avatar-option" onclick="changeAvatar('🔥')">🔥</div>
-            <div class="avatar-option" onclick="changeAvatar('🏆')">🏆</div>
-            <div class="avatar-option" onclick="changeAvatar('🎓')">🎓</div>
         </div>
 
         <div class="profile-stats">
             <div class="stat-box">
-                <div style="font-size: 2rem;" id="studyStreak">0</div>
+                <div class="stat-number" id="studyStreak">0</div>
                 <div>Day Streak 🔥</div>
             </div>
             <div class="stat-box">
-                <div style="font-size: 2rem;" id="coursesCompleted">0</div>
+                <div class="stat-number" id="coursesCompleted">0</div>
                 <div>Courses 📚</div>
             </div>
             <div class="stat-box">
-                <div style="font-size: 2rem;" id="certificatesEarned">0</div>
+                <div class="stat-number" id="certificatesEarned">0</div>
                 <div>Certificates 🎓</div>
             </div>
             <div class="stat-box">
-                <div style="font-size: 2rem;" id="forumPosts">0</div>
+                <div class="stat-number" id="forumPosts">0</div>
                 <div>Forum Posts 💬</div>
             </div>
         </div>
 
-        <div class="card">
+        <div class="info-card">
             <h3>📊 Your Learning Progress</h3>
             <div id="userProgress"></div>
         </div>
 
-        <div class="card">
+        <div class="info-card">
             <h3>🏆 Achievements</h3>
             <div id="userAchievements"></div>
         </div>
 
-        <div class="card">
+        <div class="info-card">
             <h3>📜 Your Certificates</h3>
             <div id="userCertificates"></div>
+        </div>
+
+        <div class="info-card">
+            <h3>💾 Saved Posts</h3>
+            <div id="savedPosts"></div>
         </div>
     </main>
 
@@ -173,81 +157,54 @@ updateUIForUser();
                 <a href="#">💼 LinkedIn</a>
             </div>
         </div>
-        <p class="copyright">© 2024 | Your learning journey starts here</p>
-        <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem;">
-            👥 Live Visitors: <span id="visitorCount">0</span> | 
-            📅 Today's Visitors: <span id="todayCount">0</span>
-        </div>
-
-        <script>
-        // Simple visitor counter
-        let visitorId = localStorage.getItem('visitorId');
-        if(!visitorId) {
-            visitorId = 'visitor_' + Date.now() + '_' + Math.random();
-            localStorage.setItem('visitorId', visitorId);
-        }
-
-        // Track active visitors
-        let activeVisitors = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
-        activeVisitors[visitorId] = Date.now();
-        localStorage.setItem('activeVisitors', JSON.stringify(activeVisitors));
-
-        // Count active visitors (last 5 minutes)
-        function updateCounters() {
-            const now = Date.now();
-            let active = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
-            let count = 0;
-            Object.keys(active).forEach(id => {
-                if(now - active[id] < 300000) { // 5 minutes
-                    count++;
-                } else {
-                    delete active[id];
-                }
-            });
-            localStorage.setItem('activeVisitors', JSON.stringify(active));
-            document.getElementById('visitorCount').innerHTML = count;
-            
-            // Today's visitors
-            const today = new Date().toDateString();
-            let todayVisitors = JSON.parse(localStorage.getItem('todayVisitors') || '{}');
-            if(!todayVisitors[today]) {
-                todayVisitors[today] = new Set();
-            }
-            todayVisitors[today].add(visitorId);
-            localStorage.setItem('todayVisitors', JSON.stringify(todayVisitors));
-            document.getElementById('todayCount').innerHTML = todayVisitors[today].size;
-        }
-
-        setInterval(updateCounters, 60000);
-        updateCounters();
-        </script>
+        <p class="copyright">© 2024 | Your learning journey</p>
     </footer>
 
     <script>
-        // Load user profile
+        const user = getCurrentUser();
+        
+        if(!user) {
+            window.location.href = 'login.html';
+        }
+        
         function loadProfile() {
-            const user = JSON.parse(localStorage.getItem('userProfile') || '{}');
-            document.getElementById('displayName').innerHTML = user.name || 'Student';
-            document.getElementById('avatar').innerHTML = user.avatar || '🧑‍🎓';
-            document.getElementById('joinDate').innerHTML = user.joinDate || new Date().toLocaleDateString();
+            document.getElementById('displayName').innerHTML = user.name;
+            document.getElementById('userEmail').innerHTML = user.email;
+            
+            // Load user data from localStorage
+            const users = JSON.parse(localStorage.getItem('users'));
+            const userData = users.find(u => u.id === user.id);
+            
+            if(userData && userData.joinDate) {
+                document.getElementById('joinDate').innerHTML = new Date(userData.joinDate).toLocaleDateString();
+            }
+            
+            // Load avatar
+            const savedAvatar = localStorage.getItem(`avatar_${user.id}`);
+            if(savedAvatar) {
+                document.getElementById('avatar').innerHTML = savedAvatar;
+            }
             
             // Load stats
-            document.getElementById('studyStreak').innerHTML = localStorage.getItem('studyStreak') || 0;
-            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            document.getElementById('coursesCompleted').innerHTML = enrollments.filter(e => e.type === 'premium').length;
+            const streak = localStorage.getItem(`studyStreak_${user.id}`) || 0;
+            document.getElementById('studyStreak').innerHTML = streak;
             
-            const certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
+            const enrollments = JSON.parse(localStorage.getItem(`enrollments_${user.id}`) || '[]');
+            document.getElementById('coursesCompleted').innerHTML = enrollments.length;
+            
+            const certificates = JSON.parse(localStorage.getItem(`certificates_${user.id}`) || '[]');
             document.getElementById('certificatesEarned').innerHTML = certificates.length;
             
             const forumTopics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
-            document.getElementById('forumPosts').innerHTML = forumTopics.filter(t => t.author === user.name).length;
+            const userPosts = forumTopics.filter(t => t.authorEmail === user.email);
+            document.getElementById('forumPosts').innerHTML = userPosts.length;
             
             // Progress
-            const progress = JSON.parse(localStorage.getItem('learningProgress') || '{}');
+            const progress = JSON.parse(localStorage.getItem(`progress_${user.id}`) || '{}');
             const topicsCompleted = Object.values(progress).filter(v => v === true).length;
             document.getElementById('userProgress').innerHTML = `
                 <div class="progress-bar" style="margin: 1rem 0;">
-                    <div class="progress-fill" style="width: ${topicsCompleted}%;"></div>
+                    <div class="progress-fill" style="width: ${topicsCompleted}%; background: #0066cc; height: 10px; border-radius: 5px;"></div>
                 </div>
                 <p>${topicsCompleted}% complete on your learning path!</p>
             `;
@@ -258,8 +215,8 @@ updateUIForUser();
             if(topicsCompleted >= 50) achievements.push('📚 Knowledge Seeker');
             if(topicsCompleted >= 75) achievements.push('🔥 Learning Machine');
             if(topicsCompleted >= 100) achievements.push('🏆 Master Learner');
-            if(localStorage.getItem('studyStreak') >= 7) achievements.push('⚡ Weekly Warrior');
-            if(localStorage.getItem('studyStreak') >= 30) achievements.push('💪 Unstoppable');
+            if(streak >= 7) achievements.push('⚡ Weekly Warrior');
+            if(streak >= 30) achievements.push('💪 Unstoppable');
             
             document.getElementById('userAchievements').innerHTML = achievements.length ? 
                 achievements.map(a => `<span class="badge">${a}</span>`).join('') :
@@ -269,31 +226,44 @@ updateUIForUser();
             document.getElementById('userCertificates').innerHTML = certificates.length ?
                 certificates.map(c => `<p>🎓 ${c.name} - ${new Date(c.date).toLocaleDateString()}</p>`).join('') :
                 '<p>No certificates yet. Complete courses to earn! 📜</p>';
+            
+            // Saved posts
+            const savedPosts = JSON.parse(localStorage.getItem(`savedPosts_${user.id}`) || '[]');
+            document.getElementById('savedPosts').innerHTML = savedPosts.length ?
+                savedPosts.map(post => `<p>📌 ${post}</p>`).join('') :
+                '<p>Save posts from blog to see them here!</p>';
         }
         
         function editProfile() {
-            const newName = prompt('Enter your name:', document.getElementById('displayName').innerHTML);
-            if(newName) {
-                const user = JSON.parse(localStorage.getItem('userProfile') || '{}');
-                user.name = newName;
-                if(!user.joinDate) user.joinDate = new Date().toLocaleDateString();
-                localStorage.setItem('userProfile', JSON.stringify(user));
-                loadProfile();
+            const newName = prompt('Enter your name:', user.name);
+            if(newName && newName !== user.name) {
+                // Update in users array
+                let users = JSON.parse(localStorage.getItem('users'));
+                const userIndex = users.findIndex(u => u.id === user.id);
+                if(userIndex !== -1) {
+                    users[userIndex].name = newName;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Update session
+                    user.name = newName;
+                    sessionStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    loadProfile();
+                    updateUIForUser();
+                    alert('Profile updated successfully!');
+                }
             }
         }
         
-        function showAvatarSelector() {
-            const selector = document.getElementById('avatarSelector');
-            selector.style.display = selector.style.display === 'none' ? 'grid' : 'none';
-        }
-        
-        function changeAvatar(avatar) {
-            const user = JSON.parse(localStorage.getItem('userProfile') || '{}');
-            user.avatar = avatar;
-            localStorage.setItem('userProfile', JSON.stringify(user));
-            document.getElementById('avatar').innerHTML = avatar;
-            document.getElementById('avatarSelector').style.display = 'none';
-        }
+        // Avatar selector
+        document.getElementById('avatar').addEventListener('click', () => {
+            const avatars = ['🧑‍🎓', '👨‍💻', '👩‍💻', '🧠', '📚', '⭐', '🚀', '🎯', '💡', '🔥', '🏆', '🎓'];
+            const selected = prompt('Choose an avatar:\n' + avatars.join(' '));
+            if(selected && avatars.includes(selected)) {
+                localStorage.setItem(`avatar_${user.id}`, selected);
+                document.getElementById('avatar').innerHTML = selected;
+            }
+        });
         
         loadProfile();
     </script>

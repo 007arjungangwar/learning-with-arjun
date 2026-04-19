@@ -1,30 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="auth-check.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Arjun's Learning Hub</title>
     <link rel="stylesheet" href="style.css">
+    <script src="auth-check.js"></script>
     <style>
-        .dashboard-stats {
+        .admin-header {
+            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+            padding: 2rem;
+            border-radius: 20px;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1rem;
             margin: 2rem 0;
         }
         
-        .dashboard-card {
+        .admin-card {
             background: white;
             padding: 1.5rem;
             border-radius: 12px;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
-        .dashboard-number {
+        .admin-number {
             font-size: 2rem;
             font-weight: bold;
-            color: #0066cc;
+            color: #ff9800;
         }
         
         .admin-section {
@@ -34,35 +43,52 @@
             margin: 1rem 0;
         }
         
-        .admin-table {
+        .user-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+        
+        .user-table table {
             width: 100%;
             border-collapse: collapse;
         }
         
-        .admin-table th, .admin-table td {
-            padding: 0.5rem;
+        .user-table th, .user-table td {
+            padding: 0.75rem;
             text-align: left;
             border-bottom: 1px solid #eaeaea;
         }
+        
+        .user-table th {
+            background: #f5f7fa;
+            font-weight: bold;
+        }
+        
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .promote-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
     </style>
 </head>
-<script>
-// This ensures navigation updates on every page
-updateUIForUser();
-</script>
 <body>
-<script>
-// Check if user is admin
-const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || 'null');
-if(!currentUser || currentUser.role !== 'admin') {
-    alert('Access denied. Admin area only.');
-    window.location.href = 'index.html';
-}
-</script>
     <nav>
         <div class="nav-container">
             <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
-            <div class="nav-links" id="mainNav">
+            <div class="nav-links">
                 <a href="index.html">🏠 Home</a>
                 <a href="blog.html">📝 Blog</a>
                 <a href="projects.html">💻 Projects</a>
@@ -72,56 +98,60 @@ if(!currentUser || currentUser.role !== 'admin') {
                 <a href="resources.html">🎁 Resources</a>
                 <a href="roadmap.html">🗺️ Roadmap</a>
                 <a href="quiz.html">📝 Quiz</a>
+                <a href="profile.html">👤 Profile</a>
+                <a href="admin.html">📊 Admin</a>
                 <a href="about.html">📖 About</a>
             </div>
         </div>
     </nav>
 
     <main>
-        <h1>📊 Admin Dashboard</h1>
-        <p>Your website analytics at a glance. (Only visible to you)</p>
+        <div class="admin-header">
+            <h1>📊 Admin Dashboard</h1>
+            <p>Welcome back, <span id="adminName">Admin</span> (<span id="adminEmail"></span>)</p>
+        </div>
 
-        <div class="dashboard-stats">
-            <div class="dashboard-card">
-                <div class="dashboard-number" id="totalVisits">0</div>
-                <div>Total Visits</div>
+        <div class="admin-stats">
+            <div class="admin-card">
+                <div class="admin-number" id="totalUsers">0</div>
+                <div>Total Users</div>
             </div>
-            <div class="dashboard-card">
-                <div class="dashboard-number" id="totalStudents">0</div>
-                <div>Active Students</div>
+            <div class="admin-card">
+                <div class="admin-number" id="totalStudents">0</div>
+                <div>Students</div>
             </div>
-            <div class="dashboard-card">
-                <div class="dashboard-number" id="totalEnrollments">0</div>
-                <div>Course Enrollments</div>
+            <div class="admin-card">
+                <div class="admin-number" id="totalAdmins">0</div>
+                <div>Admins</div>
             </div>
-            <div class="dashboard-card">
-                <div class="dashboard-number" id="totalCertificates">0</div>
-                <div>Certificates Generated</div>
+            <div class="admin-card">
+                <div class="admin-number" id="newToday">0</div>
+                <div>New Today</div>
             </div>
         </div>
 
         <div class="admin-section">
-            <h3>💰 Pending Payments / Enrollments</h3>
-            <div id="pendingEnrollments"></div>
+            <h3>👥 All Users</h3>
+            <div class="user-table" id="usersTable"></div>
         </div>
 
         <div class="admin-section">
-            <h3>📝 Recent Forum Topics</h3>
-            <div id="recentTopics"></div>
+            <h3>📝 Recent Forum Posts</h3>
+            <div id="forumPosts"></div>
         </div>
 
         <div class="admin-section">
-            <h3>💬 Recent Q&A Questions</h3>
-            <div id="recentQuestions"></div>
+            <h3>💬 Student Questions</h3>
+            <div id="studentQuestions"></div>
         </div>
 
         <div class="admin-section">
-            <h3>📊 Study Statistics</h3>
-            <div id="studyStats"></div>
+            <h3>📊 System Stats</h3>
+            <div id="systemStats"></div>
         </div>
 
-        <button class="btn-primary" onclick="exportData()">📥 Export All Data (CSV)</button>
-        <button class="btn-secondary" onclick="resetData()" style="margin-left: 1rem;">🔄 Reset Demo Data</button>
+        <button class="btn-primary" onclick="exportData()">📥 Export All Data</button>
+        <button class="btn-secondary" onclick="clearAllData()" style="margin-left: 1rem;">⚠️ Clear Demo Data</button>
     </main>
 
     <footer>
@@ -130,126 +160,141 @@ if(!currentUser || currentUser.role !== 'admin') {
                 <h4>Arjun Gangwar</h4>
                 <p>Data Science @ IIT Palakkad</p>
             </div>
-            <div class="social">
-                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
-                <a href="#">💼 LinkedIn</a>
-            </div>
         </div>
-        <p class="copyright">© 2024 | Admin Dashboard - Your command center</p>
-        <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem;">
-            👥 Live Visitors: <span id="visitorCount">0</span> | 
-            📅 Today's Visitors: <span id="todayCount">0</span>
-        </div>
-
-        <script>
-        // Simple visitor counter
-        let visitorId = localStorage.getItem('visitorId');
-        if(!visitorId) {
-            visitorId = 'visitor_' + Date.now() + '_' + Math.random();
-            localStorage.setItem('visitorId', visitorId);
-        }
-
-        // Track active visitors
-        let activeVisitors = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
-        activeVisitors[visitorId] = Date.now();
-        localStorage.setItem('activeVisitors', JSON.stringify(activeVisitors));
-
-        // Count active visitors (last 5 minutes)
-        function updateCounters() {
-            const now = Date.now();
-            let active = JSON.parse(localStorage.getItem('activeVisitors') || '{}');
-            let count = 0;
-            Object.keys(active).forEach(id => {
-                if(now - active[id] < 300000) { // 5 minutes
-                    count++;
-                } else {
-                    delete active[id];
-                }
-            });
-            localStorage.setItem('activeVisitors', JSON.stringify(active));
-            document.getElementById('visitorCount').innerHTML = count;
-            
-            // Today's visitors
-            const today = new Date().toDateString();
-            let todayVisitors = JSON.parse(localStorage.getItem('todayVisitors') || '{}');
-            if(!todayVisitors[today]) {
-                todayVisitors[today] = new Set();
-            }
-            todayVisitors[today].add(visitorId);
-            localStorage.setItem('todayVisitors', JSON.stringify(todayVisitors));
-            document.getElementById('todayCount').innerHTML = todayVisitors[today].size;
-        }
-
-        setInterval(updateCounters, 60000);
-        updateCounters();
-        </script>
+        <p class="copyright">© 2024 | Admin Control Panel</p>
     </footer>
 
     <script>
-        // Track page visits
-        let visits = parseInt(localStorage.getItem('totalVisits') || '0');
-        if(!sessionStorage.getItem('visited')) {
-            visits++;
-            localStorage.setItem('totalVisits', visits);
-            sessionStorage.setItem('visited', 'true');
+        const admin = getCurrentUser();
+        
+        if(!admin || admin.role !== 'admin') {
+            window.location.href = 'index.html';
         }
         
-        function loadDashboard() {
-            document.getElementById('totalVisits').innerHTML = localStorage.getItem('totalVisits') || 0;
+        document.getElementById('adminName').innerHTML = admin.name;
+        document.getElementById('adminEmail').innerHTML = admin.email;
+        
+        function loadAdminData() {
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const students = users.filter(u => u.role === 'student');
+            const admins = users.filter(u => u.role === 'admin');
             
-            // Calculate active students (unique visitors in last 7 days)
-            let students = JSON.parse(localStorage.getItem('activeStudents') || '[]');
-            document.getElementById('totalStudents').innerHTML = students.length || 24;
+            document.getElementById('totalUsers').innerHTML = users.length;
+            document.getElementById('totalStudents').innerHTML = students.length;
+            document.getElementById('totalAdmins').innerHTML = admins.length;
             
-            // Course enrollments
-            let enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
-            document.getElementById('totalEnrollments').innerHTML = enrollments.length;
+            // New users today
+            const today = new Date().toDateString();
+            const newToday = users.filter(u => new Date(u.joinDate).toDateString() === today);
+            document.getElementById('newToday').innerHTML = newToday.length;
             
-            // Certificates
-            let certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
-            document.getElementById('totalCertificates').innerHTML = certificates.length;
-            
-            // Pending enrollments
-            let pending = JSON.parse(localStorage.getItem('pendingEnrollments') || '[]');
-            const pendingDiv = document.getElementById('pendingEnrollments');
-            if(pending.length === 0) {
-                pendingDiv.innerHTML = '<p>No pending enrollments.</p>';
-            } else {
-                pendingDiv.innerHTML = `
-                    <table class="admin-table">
-                        <tr><th>Name</th><th>Course</th><th>Amount</th><th>Email</th><th>Date</th></tr>
-                        ${pending.map(p => `
-                            <tr><td>${p.name}</td><td>${p.course}</td><td>₹${p.amount}</td><td>${p.email}</td><td>${new Date(p.date).toLocaleDateString()}</td></tr>
+            // Users table
+            const usersTable = document.getElementById('usersTable');
+            usersTable.innerHTML = `
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
+                    </thead>
+                    <tbody>
+                        ${users.map(user => `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td><span class="role-badge role-${user.role}">${user.role}</span></td>
+                                <td>${new Date(user.joinDate).toLocaleDateString()}</td>
+                                <td>
+                                    ${user.role !== 'admin' ? `
+                                        <button class="promote-btn" onclick="promoteToAdmin(${user.id})">Promote</button>
+                                        <button class="delete-btn" onclick="deleteUser(${user.id})">Delete</button>
+                                    ` : 'System Admin'}
+                                </td>
+                            </tr>
                         `).join('')}
-                    </table>
-                    <button class="btn-primary" onclick="markProcessed()" style="margin-top: 1rem;">✓ Mark All as Processed</button>
-                `;
-            }
-            
-            // Recent forum topics
-            let topics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
-            const topicsDiv = document.getElementById('recentTopics');
-            topicsDiv.innerHTML = topics.slice(-5).reverse().map(t => `
-                <p><strong>${t.title}</strong> - by ${t.author} (${new Date(t.date).toLocaleDateString()})</p>
-            `).join('') || '<p>No topics yet.</p>';
-            
-            // Study stats
-            const studySessions = parseInt(localStorage.getItem('studySessions') || '0');
-            const studyStreak = parseInt(localStorage.getItem('studyStreak') || '0');
-            document.getElementById('studyStats').innerHTML = `
-                <p>📚 Total Study Sessions: ${studySessions}</p>
-                <p>🔥 Current Study Streak: ${studyStreak} days</p>
-                <p>📊 Quiz Attempts: ${JSON.parse(localStorage.getItem('quizScores') || '[]').length}</p>
+                    </tbody>
+                </table>
             `;
+            
+            // Forum posts
+            const forumTopics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
+            const forumDiv = document.getElementById('forumPosts');
+            forumDiv.innerHTML = forumTopics.slice(-10).map(topic => `
+                <div style="padding: 0.5rem; border-bottom: 1px solid #eaeaea;">
+                    <strong>${topic.title}</strong> by ${topic.author}<br>
+                    <small>${topic.replies.length} replies | ${new Date(topic.date).toLocaleDateString()}</small>
+                </div>
+            `).join('') || '<p>No forum posts yet.</p>';
+            
+            // Student questions
+            const questions = JSON.parse(localStorage.getItem('studentQuestions') || '[]');
+            const questionsDiv = document.getElementById('studentQuestions');
+            questionsDiv.innerHTML = questions.slice(-10).map(q => `
+                <div style="padding: 0.5rem; border-bottom: 1px solid #eaeaea;">
+                    <strong>Q: ${q.question}</strong><br>
+                    From: ${q.name} (${q.email})<br>
+                    <small>${new Date(q.date).toLocaleDateString()}</small>
+                    ${!q.answered ? `<button onclick="answerQuestion(${q.id})" class="btn-primary" style="margin-top: 0.5rem;">Answer</button>` : `<p>A: ${q.answer}</p>`}
+                </div>
+            `).join('') || '<p>No questions yet.</p>';
+            
+            // System stats
+            const totalVisits = localStorage.getItem('totalVisits') || 0;
+            const certificates = JSON.parse(localStorage.getItem('certificates') || '[]');
+            const enrollments = JSON.parse(localStorage.getItem('enrollments') || '[]');
+            
+            document.getElementById('systemStats').innerHTML = `
+                <p>📊 Total Website Visits: ${totalVisits}</p>
+                <p>🎓 Certificates Issued: ${certificates.length}</p>
+                <p>💰 Course Enrollments: ${enrollments.length}</p>
+                <p>📝 Forum Topics: ${forumTopics.length}</p>
+                <p>💬 Student Questions: ${questions.length}</p>
+            `;
+        }
+        
+        function promoteToAdmin(userId) {
+            let users = JSON.parse(localStorage.getItem('users'));
+            const userIndex = users.findIndex(u => u.id === userId);
+            if(userIndex !== -1) {
+                users[userIndex].role = 'admin';
+                localStorage.setItem('users', JSON.stringify(users));
+                loadAdminData();
+                alert('User promoted to admin!');
+            }
+        }
+        
+        function deleteUser(userId) {
+            if(confirm('Are you sure you want to delete this user?')) {
+                let users = JSON.parse(localStorage.getItem('users'));
+                users = users.filter(u => u.id !== userId);
+                localStorage.setItem('users', JSON.stringify(users));
+                loadAdminData();
+                alert('User deleted!');
+            }
+        }
+        
+        function answerQuestion(questionId) {
+            const answer = prompt('Enter your answer:');
+            if(answer) {
+                let questions = JSON.parse(localStorage.getItem('studentQuestions') || '[]');
+                const qIndex = questions.findIndex(q => q.id === questionId);
+                if(qIndex !== -1) {
+                    questions[qIndex].answered = true;
+                    questions[qIndex].answer = answer;
+                    localStorage.setItem('studentQuestions', JSON.stringify(questions));
+                    loadAdminData();
+                    alert('Answer posted!');
+                }
+            }
         }
         
         function exportData() {
             const data = {
-                visits: localStorage.getItem('totalVisits'),
-                enrollments: JSON.parse(localStorage.getItem('enrollments') || '[]'),
-                certificates: JSON.parse(localStorage.getItem('certificates') || '[]'),
+                users: JSON.parse(localStorage.getItem('users') || '[]'),
                 forumTopics: JSON.parse(localStorage.getItem('forumTopics') || '[]'),
-                quizScores: JSON.parse(localStorage.getItem('quizScores') || '[]')
+                studentQuestions: JSON.parse(localStorage.getItem('studentQuestions') || '[]'),
+                certificates: JSON.parse(localStorage.getItem('certificates') || '[]'),
+                enrollments: JSON.parse(localStorage.getItem('enrollments') || '[]'),
+                exportDate: new Date().toISOString()
             };
             
             const dataStr = JSON.stringify(data, null, 2);
@@ -257,60 +302,32 @@ if(!currentUser || currentUser.role !== 'admin') {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `website_data_${new Date().toISOString()}.json`;
+            a.download = `admin_export_${Date.now()}.json`;
             a.click();
             URL.revokeObjectURL(url);
         }
         
-        function markProcessed() {
-            localStorage.setItem('pendingEnrollments', JSON.stringify([]));
-            loadDashboard();
-            alert('All pending enrollments marked as processed!');
-        }
-        
-        function resetData() {
-            if(confirm('WARNING: This will reset all demo data. Continue?')) {
-                localStorage.clear();
-                location.reload();
+        function clearAllData() {
+            if(confirm('WARNING: This will delete ALL data! Are you absolutely sure?')) {
+                if(confirm('FINAL WARNING: This action cannot be undone!')) {
+                    localStorage.clear();
+                    // Re-initialize with admin
+                    const defaultAdmin = [{
+                        id: 1,
+                        name: "Arjun Gangwar",
+                        email: "admin@arjun.com",
+                        password: "admin123",
+                        role: "admin",
+                        joinDate: new Date().toISOString()
+                    }];
+                    localStorage.setItem('users', JSON.stringify(defaultAdmin));
+                    alert('All data cleared. Page will reload.');
+                    location.reload();
+                }
             }
         }
         
-        loadDashboard();
+        loadAdminData();
     </script>
-
-<!-- Public content - visible to everyone -->
-<div class="public-content">
-    <h2>Free Tutorials</h2>
-    <p>These are free for everyone!</p>
-</div>
-
-<!-- Restricted content - only for logged-in users -->
-<div class="restricted-content" id="restrictedArea">
-    <div id="loginOverlay" style="display: none;" class="login-overlay">
-        <div class="login-message">
-            <h3>🔐 Login to Access</h3>
-            <p>Create free account to access premium content, save progress, and earn certificates!</p>
-            <a href="login.html" class="btn-primary">Login / Register</a>
-        </div>
-    </div>
-    
-    <div id="premiumContent" style="display: none;">
-        <h2>Premium Content (Logged in users only)</h2>
-        <p>Your premium content here...</p>
-    </div>
-</div>
-
-<script>
-// Show/hide content based on login
-const user = getCurrentUser();
-if(user) {
-    document.getElementById('premiumContent').style.display = 'block';
-    document.getElementById('loginOverlay').style.display = 'none';
-} else {
-    document.getElementById('premiumContent').style.display = 'none';
-    document.getElementById('loginOverlay').style.display = 'flex';
-}
-</script>
-
 </body>
 </html>

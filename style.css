@@ -802,3 +802,67 @@ body.dark-mode .search-box {
     font-weight: bold;
     color: #0066cc;
 }
+
+
+/* Role badges */
+.role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.role-admin {
+    background: #ff9800;
+    color: white;
+}
+
+.role-student {
+    background: #4caf50;
+    color: white;
+}
+
+/* User menu */
+.user-menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: 1rem;
+    padding-left: 1rem;
+    border-left: 1px solid #eaeaea;
+}
+
+.user-name {
+    font-weight: bold;
+    color: #0066cc;
+}
+
+.user-email {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.logout-btn {
+    background: #ff4444;
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.logout-btn:hover {
+    background: #cc0000;
+}
+
+@media (max-width: 768px) {
+    .user-menu {
+        flex-wrap: wrap;
+        margin-top: 0.5rem;
+    }
+    .user-email {
+        display: none;
+    }
+}
