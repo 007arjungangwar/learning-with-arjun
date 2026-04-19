@@ -84,6 +84,14 @@
         }
     </style>
 </head>
+<script>
+    // Ensure UI updates after page loads
+    setTimeout(() => {
+        if(typeof updateUIForUser === 'function') {
+            updateUIForUser();
+        }
+    }, 100);
+</script>
 <body>
     <nav>
         <div class="nav-container">
@@ -163,12 +171,17 @@
     </footer>
 
     <script>
+        // Get admin user
         const admin = getCurrentUser();
         
+        console.log("Admin check:", admin);
+        
         if(!admin || admin.role !== 'admin') {
-            window.location.href = 'index.html';
+            alert('Access denied. Admin only area. Please login as admin.');
+            window.location.href = 'login.html';
         }
         
+        // Display admin info
         document.getElementById('adminName').innerHTML = admin.name;
         document.getElementById('adminEmail').innerHTML = admin.email;
         

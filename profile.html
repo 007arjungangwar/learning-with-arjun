@@ -77,6 +77,14 @@
         }
     </style>
 </head>
+<script>
+    // Ensure UI updates after page loads
+    setTimeout(() => {
+        if(typeof updateUIForUser === 'function') {
+            updateUIForUser();
+        }
+    }, 100);
+</script>
 <body>
     <nav>
         <div class="nav-container">

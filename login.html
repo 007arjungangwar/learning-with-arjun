@@ -1,18 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="auth-check.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Arjun's Learning Hub</title>
     <link rel="stylesheet" href="style.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        nav {
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .nav-links a {
+            margin-left: 1rem;
+            text-decoration: none;
+            color: #666;
+        }
+        
         .auth-container {
             max-width: 450px;
             margin: 3rem auto;
             background: white;
             border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
             overflow: hidden;
         }
         
@@ -77,33 +117,48 @@
             color: red;
             font-size: 0.875rem;
             margin-top: 0.5rem;
+            text-align: center;
         }
         
         .success-msg {
             color: green;
             font-size: 0.875rem;
             margin-top: 0.5rem;
+            text-align: center;
         }
         
-        .role-badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: bold;
+        .info-box {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f0f7ff;
+            border-radius: 12px;
         }
         
-        .role-admin {
-            background: #ff9800;
+        .demo-credentials {
+            background: #e8f5e9;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem;
             color: white;
-        }
-        
-        .role-student {
-            background: #4caf50;
-            color: white;
+            margin-top: auto;
         }
     </style>
 </head>
+<script>
+    // Ensure UI updates after page loads
+    setTimeout(() => {
+        if(typeof updateUIForUser === 'function') {
+            updateUIForUser();
+        }
+    }, 100);
+</script>
 <body>
     <nav>
         <div class="nav-container">
@@ -131,6 +186,12 @@
                 <input type="password" id="loginPassword" placeholder="Password" class="auth-input">
                 <button class="auth-btn" onclick="login()">Login →</button>
                 <div id="loginError" class="error-msg"></div>
+                
+                <div class="demo-credentials">
+                    <strong>📝 Demo Credentials:</strong><br>
+                    Student: student@test.com / student123<br>
+                    Admin: admin@arjun.com / admin123
+                </div>
             </div>
             
             <!-- Register Form -->
@@ -148,25 +209,17 @@
             </div>
         </div>
         
-        <div class="info-box" style="text-align: center; margin-top: 2rem; padding: 1rem; background: #f0f7ff; border-radius: 12px;">
+        <div class="info-box">
             <h3>🎁 What you get after registration:</h3>
             <p>✅ Full access to all tutorials and courses</p>
             <p>✅ Progress tracker - Save your learning journey</p>
             <p>✅ Certificate generation on completion</p>
             <p>✅ Participate in discussions and forum</p>
-            <p>✅ Save your favorite resources</p>
-            <p>✅ Get personalized recommendations</p>
         </div>
     </main>
 
     <footer>
-        <div class="footer-content">
-            <div>
-                <h4>Arjun Gangwar</h4>
-                <p>Data Science @ IIT Palakkad</p>
-            </div>
-        </div>
-        <p class="copyright">© 2024 | Join our community of learners</p>
+        <p>© 2024 Arjun's Learning Hub | Learn, Grow, Succeed</p>
     </footer>
 
     <script>
@@ -180,9 +233,18 @@
                     password: "admin123",
                     role: "admin",
                     joinDate: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    name: "Test Student",
+                    email: "student@test.com",
+                    password: "student123",
+                    role: "student",
+                    joinDate: new Date().toISOString()
                 }
             ];
             localStorage.setItem('users', JSON.stringify(defaultUsers));
+            console.log("Default users created!");
         }
         
         function switchTab(tab) {
@@ -209,7 +271,9 @@
             const password = document.getElementById('regPassword').value;
             const confirm = document.getElementById('regConfirm').value;
             
-            // Validation
+            document.getElementById('regError').innerHTML = '';
+            document.getElementById('regSuccess').innerHTML = '';
+            
             if(!name || !email || !password) {
                 document.getElementById('regError').innerHTML = 'Please fill all fields!';
                 return;
@@ -225,29 +289,24 @@
                 return;
             }
             
-            // Check if email exists
             let users = JSON.parse(localStorage.getItem('users'));
             if(users.find(u => u.email === email)) {
                 document.getElementById('regError').innerHTML = 'Email already registered! Please login.';
                 return;
             }
             
-            // Create new user
             const newUser = {
                 id: Date.now(),
                 name: name,
                 email: email,
                 password: password,
                 role: "student",
-                joinDate: new Date().toISOString(),
-                progress: {},
-                savedPosts: []
+                joinDate: new Date().toISOString()
             };
             
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
             
-            // Auto login
             sessionStorage.setItem('currentUser', JSON.stringify({
                 id: newUser.id,
                 name: newUser.name,
@@ -266,6 +325,8 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
+            document.getElementById('loginError').innerHTML = '';
+            
             if(!email || !password) {
                 document.getElementById('loginError').innerHTML = 'Please enter email and password!';
                 return;
@@ -279,7 +340,7 @@
                 return;
             }
             
-            // Store current user in session
+            // Store in session
             sessionStorage.setItem('currentUser', JSON.stringify({
                 id: user.id,
                 name: user.name,
@@ -287,7 +348,9 @@
                 role: user.role
             }));
             
-            // Redirect based on role
+            console.log("Logged in as:", user.name, "Role:", user.role);
+            
+            // Redirect
             if(user.role === 'admin') {
                 window.location.href = 'admin.html';
             } else {
@@ -298,7 +361,12 @@
         // Check if already logged in
         const currentUser = sessionStorage.getItem('currentUser');
         if(currentUser) {
-            window.location.href = 'index.html';
+            const user = JSON.parse(currentUser);
+            if(user.role === 'admin') {
+                window.location.href = 'admin.html';
+            } else {
+                window.location.href = 'index.html';
+            }
         }
     </script>
 </body>

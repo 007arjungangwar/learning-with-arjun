@@ -1,17 +1,20 @@
-// auth-check.js - Complete authentication with Profile Circle
+// auth-check.js - Complete working authentication
 
 // Get current user from session
 function getCurrentUser() {
     const user = sessionStorage.getItem('currentUser');
-    return user ? JSON.parse(user) : null;
+    if(user) {
+        return JSON.parse(user);
+    }
+    return null;
 }
 
-// Check if user is logged in
+// Check if logged in
 function isLoggedIn() {
     return getCurrentUser() !== null;
 }
 
-// Check if user is admin
+// Check if admin
 function isAdmin() {
     const user = getCurrentUser();
     return user && user.role === 'admin';
@@ -45,11 +48,10 @@ function logout() {
     }
 }
 
-// Create Profile Circle in top right corner
+// Create profile circle
 function createProfileCircle() {
     const user = getCurrentUser();
     
-    // Remove existing if any
     const existingCircle = document.querySelector('.user-profile-circle');
     if(existingCircle) existingCircle.remove();
     
@@ -66,25 +68,15 @@ function createProfileCircle() {
                         <div class="dropdown-email">${user.email}</div>
                     </div>
                     <div class="dropdown-divider"></div>
-                    <a href="profile.html" class="dropdown-item">
-                        👤 My Profile
-                    </a>
-                    <a href="tracker.html" class="dropdown-item">
-                        📊 My Progress
-                    </a>
-                    <a href="certificate.html" class="dropdown-item">
-                        🎓 My Certificates
-                    </a>
+                    <a href="profile.html" class="dropdown-item">👤 My Profile</a>
+                    <a href="tracker.html" class="dropdown-item">📊 My Progress</a>
+                    <a href="certificate.html" class="dropdown-item">🎓 My Certificates</a>
                     <div class="dropdown-divider"></div>
                     ${user.role === 'admin' ? `
-                        <a href="admin.html" class="dropdown-item">
-                            📊 Admin Dashboard
-                        </a>
+                        <a href="admin.html" class="dropdown-item">📊 Admin Dashboard</a>
                         <div class="dropdown-divider"></div>
                     ` : ''}
-                    <div class="dropdown-item logout" onclick="logout()">
-                        🚪 Logout
-                    </div>
+                    <div class="dropdown-item logout" onclick="logout()">🚪 Logout</div>
                 </div>
             </div>
         `;
@@ -93,7 +85,7 @@ function createProfileCircle() {
     }
 }
 
-// Toggle dropdown menu
+// Toggle dropdown
 function toggleDropdown() {
     const dropdown = document.getElementById('userDropdown');
     if(dropdown) {
@@ -110,25 +102,19 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Update navigation - Remove old user menu, add profile circle
+// Update UI
 function updateUIForUser() {
     const user = getCurrentUser();
     
-    // Remove old user menu if exists
-    const oldMenu = document.querySelector('.user-menu');
-    if(oldMenu) oldMenu.remove();
-    
     // Remove old login link if exists
     const oldLoginLink = document.querySelector('a[href="login.html"]');
-    if(oldLoginLink && !user) {
-        // Keep it if no user
-    } else if(oldLoginLink && user) {
-        oldLoginLink.remove();
-    }
+    const navLinks = document.querySelector('.nav-links');
     
-    // Add login link if no user
-    if(!user) {
-        const navLinks = document.querySelector('.nav-links');
+    if(user) {
+        if(oldLoginLink) oldLoginLink.remove();
+        createProfileCircle();
+    } else {
+        if(oldLoginLink) return;
         if(navLinks && !document.querySelector('a[href="login.html"]')) {
             const loginLink = document.createElement('a');
             loginLink.href = 'login.html';
@@ -137,17 +123,7 @@ function updateUIForUser() {
         }
     }
     
-    // Create profile circle if user exists
-    if(user) {
-        createProfileCircle();
-    }
-    
-    // Update welcome message on home page
-    updateWelcomeMessage(user);
-}
-
-// Update welcome message
-function updateWelcomeMessage(user) {
+    // Update welcome message
     const guestMsg = document.getElementById('guestMessage');
     const userMsg = document.getElementById('userMessage');
     const userNameSpan = document.getElementById('userName');
@@ -169,15 +145,10 @@ function checkPageAccess() {
     const user = getCurrentUser();
     const currentPage = window.location.pathname.split('/').pop();
     
-    // Public pages
     const publicPages = ['index.html', 'login.html', 'about.html', 'blog.html', 'projects.html'];
-    
-    // Login required pages
     const loginRequiredPages = ['courses.html', 'forum.html', 'resources.html', 'quiz.html', 
                                  'certificate.html', 'assistant.html', 'tracker.html', 
                                  'videos.html', 'roadmap.html', 'profile.html', 'chat.html'];
-    
-    // Admin only pages
     const adminPages = ['admin.html'];
     
     if(publicPages.includes(currentPage)) {
@@ -196,7 +167,7 @@ function checkPageAccess() {
     if(adminPages.includes(currentPage)) {
         if(!user || user.role !== 'admin') {
             alert('Access denied. Admin only area.');
-            window.location.href = 'index.html';
+            window.location.href = 'login.html';
             return false;
         }
         return true;
@@ -205,13 +176,9 @@ function checkPageAccess() {
     return true;
 }
 
-// Add global styles
-const globalStyles = document.createElement('style');
-globalStyles.textContent = `
-    body {
-        padding-top: 0;
-    }
-    
+// Add styles
+const authStyles = document.createElement('style');
+authStyles.textContent = `
     .user-profile-circle {
         position: fixed;
         top: 20px;
@@ -320,14 +287,13 @@ globalStyles.textContent = `
             height: 35px;
             font-size: 1rem;
         }
-        .dropdown-email {
-            display: none;
-        }
     }
 `;
 
-document.head.appendChild(globalStyles);
+document.head.appendChild(authStyles);
 
-// Run on page load
+// Run checks
 checkPageAccess();
 updateUIForUser();
+
+console.log("Auth system loaded. User:", getCurrentUser());

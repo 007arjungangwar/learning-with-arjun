@@ -38,8 +38,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 </script>
 <script>
-// This ensures navigation updates on every page
-updateUIForUser();
+    // Ensure UI updates after page loads
+    setTimeout(() => {
+        if(typeof updateUIForUser === 'function') {
+            updateUIForUser();
+        }
+    }, 100);
 </script>
 <body>
     <nav>
