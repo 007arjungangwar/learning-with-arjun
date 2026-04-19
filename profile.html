@@ -91,7 +91,6 @@
                 <a href="resources.html">🎁 Resources</a>
                 <a href="roadmap.html">🗺️ Roadmap</a>
                 <a href="quiz.html">📝 Quiz</a>
-                <a href="profile.html">👤 Profile</a>
                 <a href="about.html">📖 About</a>
             </div>
         </div>
@@ -104,6 +103,7 @@
             <p id="userEmail">Loading...</p>
             <p>Member since <span id="joinDate">Loading...</span></p>
             <button class="edit-btn" onclick="editProfile()">✏️ Edit Profile</button>
+            <button class="logout-page-btn" onclick="logout()" style="background: #ff4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; margin-left: 0.5rem;">🚪 Logout</button>
         </div>
 
         <div class="profile-stats">
@@ -267,5 +267,11 @@
         
         loadProfile();
     </script>
+
+<style>
+    .logout-page-btn:hover {
+        background: #cc0000;
+    }
+</style>
 </body>
 </html>

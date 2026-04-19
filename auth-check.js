@@ -1,4 +1,4 @@
-// auth-check.js - Complete authentication system
+// auth-check.js - Complete authentication with Profile Circle
 
 // Get current user from session
 function getCurrentUser() {
@@ -29,127 +29,124 @@ function getUserName() {
     return user ? user.name : null;
 }
 
-// Logout function
-function logout() {
-    sessionStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
+// Get user avatar
+function getUserAvatar() {
+    const user = getCurrentUser();
+    if(!user) return '👤';
+    const savedAvatar = localStorage.getItem(`avatar_${user.id}`);
+    return savedAvatar || '🧑‍🎓';
 }
 
-// Update UI everywhere based on login status
+// Logout function
+function logout() {
+    if(confirm('Are you sure you want to logout?')) {
+        sessionStorage.removeItem('currentUser');
+        window.location.href = 'index.html';
+    }
+}
+
+// Create Profile Circle in top right corner
+function createProfileCircle() {
+    const user = getCurrentUser();
+    
+    // Remove existing if any
+    const existingCircle = document.querySelector('.user-profile-circle');
+    if(existingCircle) existingCircle.remove();
+    
+    if(user) {
+        const circleHTML = `
+            <div class="user-profile-circle">
+                <div class="profile-circle" onclick="toggleDropdown()">
+                    ${getUserAvatar()}
+                </div>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-avatar">${getUserAvatar()}</div>
+                        <div class="dropdown-name">${user.name}</div>
+                        <div class="dropdown-email">${user.email}</div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <a href="profile.html" class="dropdown-item">
+                        👤 My Profile
+                    </a>
+                    <a href="tracker.html" class="dropdown-item">
+                        📊 My Progress
+                    </a>
+                    <a href="certificate.html" class="dropdown-item">
+                        🎓 My Certificates
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    ${user.role === 'admin' ? `
+                        <a href="admin.html" class="dropdown-item">
+                            📊 Admin Dashboard
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    ` : ''}
+                    <div class="dropdown-item logout" onclick="logout()">
+                        🚪 Logout
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.insertAdjacentHTML('beforeend', circleHTML);
+    }
+}
+
+// Toggle dropdown menu
+function toggleDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if(dropdown) {
+        dropdown.classList.toggle('show');
+    }
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const circle = document.querySelector('.user-profile-circle');
+    const dropdown = document.getElementById('userDropdown');
+    if(circle && dropdown && !circle.contains(event.target)) {
+        dropdown.classList.remove('show');
+    }
+});
+
+// Update navigation - Remove old user menu, add profile circle
 function updateUIForUser() {
     const user = getCurrentUser();
     
-    // Update navigation
-    const navLinks = document.querySelector('.nav-links');
-    if(navLinks) {
-        // Remove existing user menu if any
-        const existingMenu = document.querySelector('.user-menu');
-        if(existingMenu) existingMenu.remove();
-        
-        if(user) {
-            // Add user menu
-            const userMenu = document.createElement('div');
-            userMenu.className = 'user-menu';
-            userMenu.innerHTML = `
-                <span class="user-name">👋 ${user.name}</span>
-                <span class="user-email">📧 ${user.email}</span>
-                <button onclick="logout()" class="logout-btn">🚪 Logout</button>
-            `;
-            navLinks.appendChild(userMenu);
-            
-            // Add admin link if admin
-            if(user.role === 'admin' && !document.querySelector('a[href="admin.html"]')) {
-                const adminLink = document.createElement('a');
-                adminLink.href = 'admin.html';
-                adminLink.innerHTML = '📊 Admin';
-                navLinks.insertBefore(adminLink, navLinks.children[navLinks.children.length - 1]);
-            }
-        } else {
-            // Add login link
-            if(!document.querySelector('a[href="login.html"]')) {
-                const loginLink = document.createElement('a');
-                loginLink.href = 'login.html';
-                loginLink.innerHTML = '🔐 Login';
-                navLinks.appendChild(loginLink);
-            }
+    // Remove old user menu if exists
+    const oldMenu = document.querySelector('.user-menu');
+    if(oldMenu) oldMenu.remove();
+    
+    // Remove old login link if exists
+    const oldLoginLink = document.querySelector('a[href="login.html"]');
+    if(oldLoginLink && !user) {
+        // Keep it if no user
+    } else if(oldLoginLink && user) {
+        oldLoginLink.remove();
+    }
+    
+    // Add login link if no user
+    if(!user) {
+        const navLinks = document.querySelector('.nav-links');
+        if(navLinks && !document.querySelector('a[href="login.html"]')) {
+            const loginLink = document.createElement('a');
+            loginLink.href = 'login.html';
+            loginLink.innerHTML = '🔐 Login';
+            navLinks.appendChild(loginLink);
         }
     }
     
-    // Update profile page if on profile page
-    if(window.location.pathname.includes('profile.html') && user) {
-        updateProfilePage(user);
-    }
-    
-    // Update admin page if on admin page
-    if(window.location.pathname.includes('admin.html') && user && user.role === 'admin') {
-        updateAdminPage(user);
+    // Create profile circle if user exists
+    if(user) {
+        createProfileCircle();
     }
     
     // Update welcome message on home page
     updateWelcomeMessage(user);
 }
 
-// Update profile page with user data
-function updateProfilePage(user) {
-    if(!user) return;
-    
-    // Update profile header
-    const nameElement = document.getElementById('displayName');
-    const emailElement = document.getElementById('userEmail');
-    const avatarElement = document.getElementById('avatar');
-    const joinDateElement = document.getElementById('joinDate');
-    
-    if(nameElement) nameElement.innerHTML = user.name;
-    if(emailElement) emailElement.innerHTML = user.email;
-    if(joinDateElement) {
-        const userData = JSON.parse(localStorage.getItem('users')).find(u => u.id === user.id);
-        if(userData && userData.joinDate) {
-            joinDateElement.innerHTML = new Date(userData.joinDate).toLocaleDateString();
-        }
-    }
-    
-    // Load user-specific data
-    loadUserStats(user);
-}
-
-// Load user statistics
-function loadUserStats(user) {
-    if(!user) return;
-    
-    // Study streak
-    const streak = localStorage.getItem(`studyStreak_${user.id}`) || 0;
-    const streakElement = document.getElementById('studyStreak');
-    if(streakElement) streakElement.innerHTML = streak;
-    
-    // Courses completed
-    const enrollments = JSON.parse(localStorage.getItem(`enrollments_${user.id}`) || '[]');
-    const coursesElement = document.getElementById('coursesCompleted');
-    if(coursesElement) coursesElement.innerHTML = enrollments.length;
-    
-    // Certificates earned
-    const certificates = JSON.parse(localStorage.getItem(`certificates_${user.id}`) || '[]');
-    const certElement = document.getElementById('certificatesEarned');
-    if(certElement) certElement.innerHTML = certificates.length;
-    
-    // Forum posts
-    const forumTopics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
-    const userPosts = forumTopics.filter(t => t.author === user.name || t.authorEmail === user.email);
-    const postsElement = document.getElementById('forumPosts');
-    if(postsElement) postsElement.innerHTML = userPosts.length;
-}
-
-// Update admin page with admin data
-function updateAdminPage(user) {
-    if(!user || user.role !== 'admin') return;
-    
-    const adminNameElement = document.getElementById('adminName');
-    const adminEmailElement = document.getElementById('adminEmail');
-    
-    if(adminNameElement) adminNameElement.innerHTML = user.name;
-    if(adminEmailElement) adminEmailElement.innerHTML = user.email;
-}
-
-// Update welcome message on home page
+// Update welcome message
 function updateWelcomeMessage(user) {
     const guestMsg = document.getElementById('guestMessage');
     const userMsg = document.getElementById('userMessage');
@@ -167,18 +164,18 @@ function updateWelcomeMessage(user) {
     }
 }
 
-// Check page access based on authentication
+// Check page access
 function checkPageAccess() {
     const user = getCurrentUser();
     const currentPage = window.location.pathname.split('/').pop();
     
-    // Public pages anyone can access
+    // Public pages
     const publicPages = ['index.html', 'login.html', 'about.html', 'blog.html', 'projects.html'];
     
-    // Pages that require login
+    // Login required pages
     const loginRequiredPages = ['courses.html', 'forum.html', 'resources.html', 'quiz.html', 
                                  'certificate.html', 'assistant.html', 'tracker.html', 
-                                 'videos.html', 'roadmap.html', 'profile.html'];
+                                 'videos.html', 'roadmap.html', 'profile.html', 'chat.html'];
     
     // Admin only pages
     const adminPages = ['admin.html'];
@@ -208,54 +205,128 @@ function checkPageAccess() {
     return true;
 }
 
-// Add styles for user menu
-const authStyles = document.createElement('style');
-authStyles.textContent = `
-    .user-menu {
-        display: inline-flex;
+// Add global styles
+const globalStyles = document.createElement('style');
+globalStyles.textContent = `
+    body {
+        padding-top: 0;
+    }
+    
+    .user-profile-circle {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1001;
+        cursor: pointer;
+    }
+    
+    .profile-circle {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        transition: transform 0.3s;
+    }
+    
+    .profile-circle:hover {
+        transform: scale(1.1);
+    }
+    
+    .user-dropdown {
+        position: absolute;
+        top: 55px;
+        right: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        min-width: 250px;
+        display: none;
+        z-index: 1002;
+        overflow: hidden;
+    }
+    
+    .user-dropdown.show {
+        display: block;
+        animation: fadeIn 0.2s ease;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .dropdown-header {
+        padding: 1rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-align: center;
+    }
+    
+    .dropdown-avatar {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .dropdown-name {
+        font-weight: bold;
+        margin-bottom: 0.25rem;
+    }
+    
+    .dropdown-email {
+        font-size: 0.75rem;
+        opacity: 0.9;
+        word-break: break-all;
+    }
+    
+    .dropdown-divider {
+        height: 1px;
+        background: #eaeaea;
+        margin: 0.5rem 0;
+    }
+    
+    .dropdown-item {
+        padding: 0.75rem 1rem;
+        display: flex;
         align-items: center;
         gap: 0.75rem;
-        margin-left: 1rem;
-        padding-left: 1rem;
-        border-left: 1px solid #eaeaea;
+        text-decoration: none;
+        color: #333;
+        transition: background 0.2s;
     }
     
-    .user-name {
-        font-weight: bold;
-        color: #0066cc;
+    .dropdown-item:hover {
+        background: #f5f7fa;
     }
     
-    .user-email {
-        font-size: 0.8rem;
-        color: #666;
-    }
-    
-    .logout-btn {
-        background: #ff4444;
-        color: white;
-        border: none;
-        padding: 0.25rem 0.75rem;
-        border-radius: 5px;
+    .dropdown-item.logout {
+        color: #ff4444;
+        border-top: 1px solid #eaeaea;
         cursor: pointer;
-        font-size: 0.8rem;
-    }
-    
-    .logout-btn:hover {
-        background: #cc0000;
     }
     
     @media (max-width: 768px) {
-        .user-menu {
-            flex-wrap: wrap;
-            margin-top: 0.5rem;
+        .user-profile-circle {
+            top: 10px;
+            right: 10px;
         }
-        .user-email {
+        .profile-circle {
+            width: 35px;
+            height: 35px;
+            font-size: 1rem;
+        }
+        .dropdown-email {
             display: none;
         }
     }
 `;
 
-document.head.appendChild(authStyles);
+document.head.appendChild(globalStyles);
 
 // Run on page load
 checkPageAccess();
