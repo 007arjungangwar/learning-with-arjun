@@ -224,13 +224,14 @@
 
     <script>
         // Initialize users if not exists
+        // Initialize users if not exists
         if(!localStorage.getItem('users')) {
             const defaultUsers = [
                 {
                     id: 1,
                     name: "Arjun Gangwar",
-                    email: "admin@arjun.com",
-                    password: "admin123",
+                    email: "arjungangwariitpkd@gmail.com",
+                    password: "adminarjun@123",
                     role: "admin",
                     joinDate: new Date().toISOString()
                 },
@@ -244,7 +245,7 @@
                 }
             ];
             localStorage.setItem('users', JSON.stringify(defaultUsers));
-            console.log("Default users created!");
+            console.log("Default users created! Admin email: arjungangwariitpkd@gmail.com");
         }
         
         function switchTab(tab) {

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reset Admin - Run Once</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 500px;
+        }
+        button {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 0.5rem;
+        }
+        .success {
+            color: green;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Reset Admin Credentials</h1>
+        <p>Click below to set your email as the admin:</p>
+        <p><strong>arjungangwariitpkd@gmail.com</strong></p>
+        <button onclick="resetAdmin()">Reset Admin Now</button>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        function resetAdmin() {
+            // Force reset users with your email as admin
+            const users = [
+                {
+                    id: 1,
+                    name: "Arjun Gangwar",
+                    email: "arjungangwariitpkd@gmail.com",
+                    password: "adminarjun@123",
+                    role: "admin",
+                    joinDate: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    name: "Test Student",
+                    email: "student@test.com",
+                    password: "student123",
+                    role: "student",
+                    joinDate: new Date().toISOString()
+                }
+            ];
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Clear current session
+            sessionStorage.removeItem('currentUser');
+            
+            document.getElementById('message').innerHTML = '<div class="success">✅ Admin reset successful!<br>Email: arjungangwariitpkd@gmail.com<br>Password: adminarjun@123<br><br>Redirecting to login...</div>';
+            
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

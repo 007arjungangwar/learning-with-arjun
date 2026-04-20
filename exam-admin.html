@@ -117,10 +117,17 @@
 
     <script>
         // Check admin access
+        // Check admin access
         const admin = getCurrentUser();
         if(!admin || admin.role !== 'admin') {
-            alert('Admin access required!');
+            alert('Admin access required! Please login with admin credentials.');
             window.location.href = 'login.html';
+        }
+
+        // Display admin email
+        console.log("Admin logged in:", admin.email);
+        if(admin.email !== 'arjungangwariitpkd@gmail.com') {
+            console.log("Warning: Using non-primary admin email");
         }
         
         let questions = getExamQuestions();
