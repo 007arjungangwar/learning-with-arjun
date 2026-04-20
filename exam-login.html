@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Login | Python Programming Test</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="exam-data.js"></script>
+    <style>
+        .exam-login-container {
+            max-width: 500px;
+            margin: 3rem auto;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        .exam-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .exam-header h1 {
+            color: #0066cc;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #eaeaea;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #0066cc;
+        }
+        
+        .exam-rules {
+            background: #f0f7ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        
+        .exam-rules h3 {
+            margin-bottom: 0.5rem;
+            color: #0066cc;
+        }
+        
+        .exam-rules ul {
+            margin-left: 1.5rem;
+        }
+        
+        .exam-rules li {
+            margin: 0.25rem 0;
+        }
+        
+        .start-btn {
+            width: 100%;
+            padding: 1rem;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .start-btn:hover {
+            background: #218838;
+        }
+        
+        .error-msg {
+            background: #fee;
+            color: red;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .warning-msg {
+            background: #fff3cd;
+            color: #856404;
+            padding: 0.75rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="exam-login.html">📝 Python Exam</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="exam-login-container">
+            <div class="exam-header">
+                <h1>📝 Python Programming Exam</h1>
+                <p>Test your Python skills with 6 coding questions</p>
+            </div>
+            
+            <div id="errorMsg" class="error-msg"></div>
+            <div id="warningMsg" class="warning-msg"></div>
+            
+            <form id="examLoginForm" onsubmit="return false;">
+                <div class="form-group">
+                    <label>📛 Full Name</label>
+                    <input type="text" id="studentName" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>🆔 Application ID</label>
+                    <input type="text" id="applicationId" placeholder="Enter your Application ID" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>📧 Email ID</label>
+                    <input type="email" id="studentEmail" placeholder="Enter your email address" required>
+                </div>
+            </form>
+            
+            <div class="exam-rules">
+                <h3>📋 Exam Rules:</h3>
+                <ul>
+                    <li>Total 6 Python programming questions</li>
+                    <li>Each question carries 10 marks</li>
+                    <li>Total marks: 60</li>
+                    <li>Time limit: 45 minutes</li>
+                    <li>Code will be auto-evaluated based on test cases</li>
+                    <li>You can attempt the exam only once</li>
+                    <li>Do not refresh the page during exam</li>
+                </ul>
+            </div>
+            
+            <button class="start-btn" onclick="startExam()">🚀 Start Exam Now</button>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>Arjun Gangwar</h4>
+                <p>Python Programming Certification Exam</p>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | Good luck with your exam!</p>
+    </footer>
+
+    <script>
+        function startExam() {
+            const name = document.getElementById('studentName').value.trim();
+            const applicationId = document.getElementById('applicationId').value.trim();
+            const email = document.getElementById('studentEmail').value.trim();
+            
+            document.getElementById('errorMsg').style.display = 'none';
+            document.getElementById('warningMsg').style.display = 'none';
+            
+            if(!name || !applicationId || !email) {
+                document.getElementById('errorMsg').innerHTML = '❌ Please fill all fields!';
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+            
+            if(applicationId.length < 3) {
+                document.getElementById('errorMsg').innerHTML = '❌ Invalid Application ID!';
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+            
+            if(!email.includes('@')) {
+                document.getElementById('errorMsg').innerHTML = '❌ Invalid Email address!';
+                document.getElementById('errorMsg').style.display = 'block';
+                return;
+            }
+            
+            // Check if student already took exam
+            if(hasTakenExam(applicationId, email)) {
+                document.getElementById('warningMsg').innerHTML = '⚠️ You have already attempted this exam! You can only take it once.';
+                document.getElementById('warningMsg').style.display = 'block';
+                return;
+            }
+            
+            // Store student info for exam
+            const examSession = {
+                name: name,
+                applicationId: applicationId,
+                email: email,
+                startTime: new Date().toISOString()
+            };
+            sessionStorage.setItem('examSession', JSON.stringify(examSession));
+            
+            // Redirect to exam
+            window.location.href = 'exam.html';
+        }
+    </script>
+</body>
+</html>

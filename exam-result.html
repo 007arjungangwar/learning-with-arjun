@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results | Python Programming Test</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .result-container {
+            max-width: 800px;
+            margin: 2rem auto;
+        }
+        
+        .score-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+        
+        .percentage {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .result-details {
+            background: white;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .question-result {
+            border-bottom: 1px solid #eaeaea;
+            padding: 1rem;
+        }
+        
+        .pass {
+            color: #28a745;
+        }
+        
+        .fail {
+            color: #ff4444;
+        }
+        
+        .download-btn {
+            background: #0066cc;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 Arjun's Learning Hub</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="exam-login.html">📝 Take Exam</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="result-container" id="resultContainer"></div>
+        <div style="text-align: center;">
+            <button class="download-btn" onclick="downloadCertificate()">📜 Download Certificate</button>
+            <button class="download-btn" onclick="window.location.href='exam-login.html'">📝 Take Another Exam</button>
+        </div>
+    </main>
+
+    <footer>
+        <p class="copyright">© 2024 | Python Certification Exam</p>
+    </footer>
+
+    <script>
+        const result = JSON.parse(sessionStorage.getItem('examResult'));
+        
+        if(!result) {
+            window.location.href = 'exam-login.html';
+        }
+        
+        function displayResult() {
+            const container = document.getElementById('resultContainer');
+            const passed = result.percentage >= 40;
+            
+            container.innerHTML = `
+                <div class="score-card">
+                    <h2>🎉 Exam Completed!</h2>
+                    <div class="score">${result.totalMarks} / ${result.maxMarks}</div>
+                    <div class="percentage">${result.percentage.toFixed(2)}%</div>
+                    <div class="${passed ? 'pass' : 'fail'}" style="font-size: 1.2rem; margin-top: 0.5rem;">
+                        ${passed ? '✅ PASSED!' : '❌ NOT PASSED'}
+                    </div>
+                </div>
+                
+                <div class="result-details">
+                    <h3>📊 Student Details</h3>
+                    <p><strong>Name:</strong> ${result.studentName}</p>
+                    <p><strong>Application ID:</strong> ${result.applicationId}</p>
+                    <p><strong>Email:</strong> ${result.email}</p>
+                    <p><strong>Date:</strong> ${new Date(result.endTime).toLocaleString()}</p>
+                </div>
+                
+                <div class="result-details">
+                    <h3>📝 Question-wise Results</h3>
+                    ${result.results.map(r => `
+                        <div class="question-result">
+                            <strong>${r.title}</strong>
+                            <div style="float: right;">${r.marksObtained.toFixed(1)} / ${r.totalMarks}</div>
+                            <div>Passed ${r.passedTests}/${r.totalTests} test cases</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+        
+        function downloadCertificate() {
+            if(result.percentage >= 40) {
+                const certContent = `
+                    ========================================
+                    PYTHON PROGRAMMING CERTIFICATE
+                    ========================================
+                    
+                    This certificate is awarded to
+                    
+                    ${result.studentName}
+                    
+                    For successfully completing the Python Programming Exam
+                    
+                    Score: ${result.totalMarks}/${result.maxMarks} (${result.percentage.toFixed(2)}%)
+                    Date: ${new Date().toLocaleDateString()}
+                    Certificate ID: ${result.applicationId}_${Date.now()}
+                    
+                    ========================================
+                    Arjun's Learning Hub
+                    ========================================
+                `;
+                
+                const blob = new Blob([certContent], {type: 'text/plain'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `Python_Certificate_${result.applicationId}.txt`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } else {
+                alert('You need to score 40% or higher to get a certificate!');
+            }
+        }
+        
+        displayResult();
+    </script>
+</body>
+</html>
