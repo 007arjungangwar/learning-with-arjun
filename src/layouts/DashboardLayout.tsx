@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Menu, X, Sun, Moon, Laptop, Bell, Search, LogOut, User as UserIcon,
   LineChart, Award, ShieldAlert, BookOpen, Map, Video, FileText,
-  HelpCircle, MessageSquare, MessageCircle, Settings, ChevronRight
+  HelpCircle, MessageSquare, MessageCircle, Settings, ChevronRight, ExternalLink
 } from 'lucide-react'
 import { toast, Toaster } from 'sonner'
 
@@ -203,6 +203,34 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
               </div>
             </div>
           ))}
+
+          <div className="space-y-2">
+            {sidebarOpen ? (
+              <h3 className="px-3 text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                Classic Workspace
+              </h3>
+            ) : (
+              <div className="border-t border-slate-200/50 dark:border-slate-800/50 my-4" />
+            )}
+            <div className="space-y-1">
+              <a
+                href="legacy/index.html"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/40 dark:hover:text-slate-100"
+              >
+                <ExternalLink className="h-5 w-5 flex-shrink-0" />
+                {sidebarOpen && <span>Classic Student</span>}
+              </a>
+              {profile?.role === 'admin' && (
+                <a
+                  href="legacy/admin.html"
+                  className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition-all hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/40 dark:hover:text-slate-100"
+                >
+                  <Settings className="h-5 w-5 flex-shrink-0" />
+                  {sidebarOpen && <span>Classic Admin</span>}
+                </a>
+              )}
+            </div>
+          </div>
         </nav>
 
         {/* Sidebar Footer */}
@@ -364,11 +392,21 @@ export const DashboardLayout: React.FC<{ children: React.ReactNode }> = ({ child
                         <Award className="h-4 w-4 text-slate-400" />
                         Certificates
                       </Link>
+                      <a href="legacy/index.html" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50" onClick={() => setShowProfileMenu(false)}>
+                        <ExternalLink className="h-4 w-4 text-slate-400" />
+                        Classic Student
+                      </a>
                       {profile?.role === 'admin' && (
-                        <Link to="/admin" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50" onClick={() => setShowProfileMenu(false)}>
-                          <Settings className="h-4 w-4 text-slate-400" />
-                          Admin Dashboard
-                        </Link>
+                        <>
+                          <Link to="/admin" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50" onClick={() => setShowProfileMenu(false)}>
+                            <Settings className="h-4 w-4 text-slate-400" />
+                            Admin Dashboard
+                          </Link>
+                          <a href="legacy/admin.html" className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800/50" onClick={() => setShowProfileMenu(false)}>
+                            <ExternalLink className="h-4 w-4 text-slate-400" />
+                            Classic Admin
+                          </a>
+                        </>
                       )}
                       <button onClick={() => { setShowProfileMenu(false); handleLogout(); }} className="flex w-full items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/20">
                         <LogOut className="h-4 w-4 text-rose-400" />

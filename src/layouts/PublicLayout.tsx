@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useTheme } from '@/contexts/ThemeContext'
-import { Sun, Moon, Laptop, Menu, X } from 'lucide-react'
+import { Sun, Moon, Laptop, Menu, X, ExternalLink } from 'lucide-react'
 
 export const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuthStore()
@@ -60,6 +60,13 @@ export const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children
               </Link>
             ))}
           </nav>
+
+          <a
+            href="legacy/index.html"
+            className="hidden lg:inline-flex items-center gap-1.5 rounded-lg border border-teal-200 px-3 py-1.5 text-sm font-semibold text-teal-700 transition-colors hover:bg-teal-50 dark:border-teal-900/60 dark:text-teal-300 dark:hover:bg-teal-950/40"
+          >
+            Classic Tools <ExternalLink className="h-3.5 w-3.5" />
+          </a>
         </div>
 
         {/* Desktop Controls */}
@@ -112,6 +119,13 @@ export const PublicLayout: React.FC<{ children: React.ReactNode }> = ({ children
                 {link.label}
               </Link>
             ))}
+            <a
+              href="legacy/index.html"
+              onClick={() => setMobileMenuOpen(false)}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold text-teal-700 hover:bg-teal-50 dark:text-teal-300 dark:hover:bg-teal-950/40"
+            >
+              Classic Tools <ExternalLink className="h-3.5 w-3.5" />
+            </a>
           </div>
 
           <div className="flex items-center justify-between border-t border-slate-100 pt-4 dark:border-slate-800">
