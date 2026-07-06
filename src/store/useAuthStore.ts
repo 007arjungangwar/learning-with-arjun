@@ -15,6 +15,62 @@ interface AuthState {
   initialize: () => () => void
 }
 
+const adminEmails = ASG_SUPABASE_CONFIG.adminEmails.map(email => email.toLowerCase())
+
+const isConfiguredAdminEmail = (email?: string | null) =>
+  Boolean(email && adminEmails.includes(email.toLowerCase()))
+
+const profileWithConfiguredRole = (profile: Profile): Profile => {
+  if (!isConfiguredAdminEmail(profile.email)) return profile
+  return { ...profile, role: 'admin' }
+}
+
+const buildProfileForUser = (user: any, fallbackName?: string): Profile => {
+  const email = (user.email || '').toLowerCase()
+  return {
+    id: user.id,
+    name: fallbackName?.trim() || user.user_metadata?.name || user.user_metadata?.full_name || email.split('@')[0] || 'Student',
+    email,
+    role: isConfiguredAdminEmail(email) ? 'admin' : 'student',
+    join_date: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  }
+}
+
+const saveProfile = async (profile: Profile) => {
+  const { error } = await supabase
+    .from('profiles')
+    .upsert(profile, { onConflict: 'id' })
+
+  if (error) {
+    console.warn('Could not save user profile in DB:', error.message)
+  }
+}
+
+const syncProfileForUser = async (user: any, fallbackName?: string): Promise<Profile | null> => {
+  if (!user) return null
+
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .select('id, name, email, role, join_date, updated_at')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (error) throw error
+
+  if (profile) {
+    const effectiveProfile = profileWithConfiguredRole(profile as Profile)
+    if (effectiveProfile.role !== profile.role) {
+      await saveProfile({ ...effectiveProfile, updated_at: new Date().toISOString() })
+    }
+    return effectiveProfile
+  }
+
+  const newProfile = buildProfileForUser(user, fallbackName)
+  await saveProfile(newProfile)
+  return newProfile
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   profile: null,
@@ -50,27 +106,7 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
 
     if (data.user) {
-      // If auto-confirm is enabled in Supabase, the user session will be ready.
-      // Otherwise, the student gets registered but need confirmation or we can cache their details.
-      const isAdmin = ASG_SUPABASE_CONFIG.adminEmails.map(e => e.toLowerCase()).includes(normalizedEmail)
-      const role = isAdmin ? 'admin' : 'student'
-      
-      const newProfile = {
-        id: data.user.id,
-        name: name.trim(),
-        email: normalizedEmail,
-        role: role as 'admin' | 'student',
-        join_date: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      }
-
-      const { error: upsertError } = await supabase
-        .from('profiles')
-        .upsert(newProfile, { onConflict: 'id' })
-
-      if (upsertError) {
-        console.warn('Could not save user profile in DB:', upsertError.message)
-      }
+      await syncProfileForUser({ ...data.user, email: normalizedEmail }, name.trim())
     }
     set({ loading: false })
   },
@@ -106,14 +142,9 @@ export const useAuthStore = create<AuthState>((set) => ({
       const user = session?.user || null
       if (user) {
         try {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('id, name, email, role, join_date, updated_at')
-            .eq('id', user.id)
-            .single()
-          
+          const profile = await syncProfileForUser(user)
           if (profile) {
-            set({ user, profile: profile as Profile, loading: false, isInitialized: true })
+            set({ user, profile, loading: false, isInitialized: true })
             sessionStorage.setItem('currentUser', JSON.stringify(profile))
             return
           }
@@ -130,35 +161,10 @@ export const useAuthStore = create<AuthState>((set) => ({
         const user = session?.user || null
         if (user) {
           try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('id, name, email, role, join_date, updated_at')
-              .eq('id', user.id)
-              .single()
-
+            const profile = await syncProfileForUser(user)
             if (profile) {
-              set({ user, profile: profile as Profile, loading: false })
+              set({ user, profile, loading: false })
               sessionStorage.setItem('currentUser', JSON.stringify(profile))
-              return
-            } else {
-              // If profile doesn't exist, create it (e.g. social logins or quick register cases)
-              const email = user.email || ''
-              const isAdmin = ASG_SUPABASE_CONFIG.adminEmails.map(e => e.toLowerCase()).includes(email.toLowerCase())
-              const role = isAdmin ? 'admin' : 'student'
-              const name = user.user_metadata?.name || user.user_metadata?.full_name || email.split('@')[0] || 'Student'
-              
-              const newProfile = {
-                id: user.id,
-                name,
-                email: email.toLowerCase(),
-                role: role as 'admin' | 'student',
-                join_date: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              }
-              
-              await supabase.from('profiles').upsert(newProfile, { onConflict: 'id' })
-              set({ user, profile: newProfile as Profile, loading: false })
-              sessionStorage.setItem('currentUser', JSON.stringify(newProfile))
               return
             }
           } catch (e) {
