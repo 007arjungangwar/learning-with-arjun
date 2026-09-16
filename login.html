@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login | ASG Tech</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="supabase-backend.js"></script>
+</head>
+<body class="asg-auth-page">
+    <nav class="asg-navbar">
+        <div class="asg-topbar">
+            <a href="index.html" class="logo asg-logo" aria-label="ASG Tech home">
+                <span class="asg-logo-mark">ASG</span>
+                <span class="asg-logo-copy">
+                    <strong>ASG Tech</strong>
+                    <small>Institute</small>
+                </span>
+            </a>
+            <div class="nav-links asg-top-links">
+                <a href="index.html">Home</a>
+                <a href="blog.html">Blog</a>
+                <a href="projects.html">Projects</a>
+                <a href="about.html">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="asg-auth-layout">
+            <section class="asg-auth-intro">
+                <div class="asg-auth-panel-header">
+                    <div>
+                        <div class="asg-eyebrow">Student access</div>
+                        <h1>Build skills that move your life forward.</h1>
+                    </div>
+                    <span class="asg-auth-live-pill">Secure portal</span>
+                </div>
+                <p>Every lesson should add confidence, every project should create proof, and every login should move you closer to a better opportunity.</p>
+
+                <div class="asg-auth-scoreboard" aria-label="Learning portal highlights">
+                    <div><strong>24/7</strong><span>Access</span></div>
+                    <div><strong>Live</strong><span>Progress</span></div>
+                    <div><strong>Verified</strong><span>Certificates</span></div>
+                </div>
+
+                <div class="asg-auth-strip" aria-label="Portal workflow">
+                    <div><span>01</span><strong>Learn</strong><small>Courses and playlists</small></div>
+                    <div><span>02</span><strong>Practice</strong><small>Quiz and coding tasks</small></div>
+                    <div><span>03</span><strong>Certify</strong><small>Verified credential QR</small></div>
+                </div>
+
+                <div class="asg-auth-mission">
+                    <strong>Learning with purpose</strong>
+                    <span>ASG Tech is built for students who want practical skills, visible progress, and confidence they can carry into real work.</span>
+                </div>
+
+                <div class="asg-auth-benefits" aria-label="Workspace features">
+                    <div><strong>Student tools</strong><span>Roadmap, videos, resources, tracker, forum, and Q&A.</span></div>
+                    <div><strong>Admin managed</strong><span>Content, progress, quiz sets, projects, and certificate access.</span></div>
+                </div>
+            </section>
+
+            <section class="auth-container">
+                <div class="asg-auth-card-top">
+                    <span>ASG Tech Institute</span>
+                    <strong>Account Access</strong>
+                </div>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" type="button" onclick="switchTab('login')">Login</button>
+                    <button class="auth-tab" type="button" onclick="switchTab('register')">Register</button>
+                </div>
+
+                <div id="loginForm" class="auth-form active">
+                    <h2>Welcome back</h2>
+                    <p>Use your student or admin account to continue.</p>
+
+                    <label class="asg-auth-field">
+                        <span>Email address</span>
+                        <input type="email" id="loginEmail" placeholder="you@example.com" class="auth-input" autocomplete="email">
+                    </label>
+                    <label class="asg-auth-field">
+                        <span>Password</span>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" class="auth-input" autocomplete="current-password">
+                    </label>
+                    <button class="auth-btn" type="button" onclick="login()">Login</button>
+                    <button class="asg-link-button" type="button" onclick="showPasswordResetRequest()">Forgot password?</button>
+                    <div id="loginError" class="error-msg"></div>
+
+                </div>
+
+                <div id="registerForm" class="auth-form">
+                    <h2>Create student account</h2>
+                    <p>Registration is free and unlocks the student workspace.</p>
+
+                    <label class="asg-auth-field">
+                        <span>Full name</span>
+                        <input type="text" id="regName" placeholder="Your full name" class="auth-input" autocomplete="name">
+                    </label>
+                    <label class="asg-auth-field">
+                        <span>Email address</span>
+                        <input type="email" id="regEmail" placeholder="you@example.com" class="auth-input" autocomplete="email">
+                    </label>
+                    <label class="asg-auth-field">
+                        <span>Password</span>
+                        <input type="password" id="regPassword" placeholder="Minimum 6 characters" class="auth-input" autocomplete="new-password">
+                    </label>
+                    <label class="asg-auth-field">
+                        <span>Confirm password</span>
+                        <input type="password" id="regConfirm" placeholder="Repeat password" class="auth-input" autocomplete="new-password">
+                    </label>
+                    <button class="auth-btn" type="button" onclick="register()">Create account</button>
+                    <div id="regError" class="error-msg"></div>
+                    <div id="regSuccess" class="success-msg"></div>
+                </div>
+
+                <div id="passwordResetRequestForm" class="auth-form">
+                    <h2>Reset password</h2>
+                    <p>Enter your email and Supabase will send a password reset link.</p>
+
+                    <label class="asg-auth-field">
+                        <span>Email address</span>
+                        <input type="email" id="resetEmail" placeholder="you@example.com" class="auth-input" autocomplete="email">
+                    </label>
+                    <button class="auth-btn" type="button" onclick="requestPasswordReset()">Send reset link</button>
+                    <button class="asg-link-button" type="button" onclick="switchTab('login')">Back to login</button>
+                    <div id="resetError" class="error-msg"></div>
+                    <div id="resetSuccess" class="success-msg"></div>
+                </div>
+
+                <div id="passwordUpdateForm" class="auth-form">
+                    <h2>Create new password</h2>
+                    <p>Use a new password for this Supabase account.</p>
+
+                    <label class="asg-auth-field">
+                        <span>New password</span>
+                        <input type="password" id="newPassword" placeholder="Minimum 6 characters" class="auth-input" autocomplete="new-password">
+                    </label>
+                    <label class="asg-auth-field">
+                        <span>Confirm password</span>
+                        <input type="password" id="newPasswordConfirm" placeholder="Repeat password" class="auth-input" autocomplete="new-password">
+                    </label>
+                    <button class="auth-btn" type="button" onclick="updatePassword()">Update password</button>
+                    <div id="updatePasswordError" class="error-msg"></div>
+                    <div id="updatePasswordSuccess" class="success-msg"></div>
+                </div>
+
+                <div class="asg-auth-card-note">
+                    <strong>New here?</strong>
+                    <span>Create a student account and your learning activity will start tracking immediately.</span>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const nextPage = new URLSearchParams(window.location.search).get("next");
+
+        function safeNextFor(user) {
+            const fallback = user.role === "admin" ? "admin.html" : "roadmap.html";
+            if (!nextPage || !/^[a-z][a-z0-9-]*\.html(?:\?[^#]*)?$/.test(nextPage)) return fallback;
+            if (["admin.html", "admin-guide.html"].includes(nextPage.split("?")[0]) && user.role !== "admin") return fallback;
+            return nextPage;
+        }
+
+        function ensureDefaultUsers() {
+            let users = [];
+
+            try {
+                users = JSON.parse(localStorage.getItem("users") || "[]");
+            } catch (error) {
+                users = [];
+            }
+
+            users = Array.isArray(users) ? users.map(({ password, ...user }) => user) : [];
+            localStorage.setItem("users", JSON.stringify(users));
+            return users;
+        }
+
+        function showAuthForm(formId, activeTab = "") {
+            document.querySelectorAll(".auth-form").forEach((form) => {
+                form.classList.toggle("active", form.id === formId);
+            });
+            const tabs = document.querySelectorAll(".auth-tab");
+            tabs[0].classList.toggle("active", activeTab === "login");
+            tabs[1].classList.toggle("active", activeTab === "register");
+        }
+
+        function switchTab(tab) {
+            if (tab === "login") {
+                showAuthForm("loginForm", "login");
+            } else {
+                showAuthForm("registerForm", "register");
+            }
+        }
+
+        function setCurrentUser(user) {
+            sessionStorage.setItem("currentUser", JSON.stringify({
+                id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                provider: user.provider || "local"
+            }));
+        }
+
+
+        function isEmailConfirmationError(error) {
+            const message = error && error.message ? error.message.toLowerCase() : "";
+            return (error && error.code === "supabase/email-confirmation-required") ||
+                message.includes("email not confirmed") ||
+                message.includes("confirm your email");
+        }
+
+        function formatBackendAuthError(error) {
+            const code = error && error.code ? error.code : "";
+            const message = error && error.message ? error.message : "";
+            if (code === "supabase/config-missing") {
+                return "Supabase is not configured yet. Add your Supabase project URL and anon key in supabase-backend.js, then run supabase-setup.sql.";
+            }
+            if (code === "supabase/email-confirmation-required") {
+                return "Please confirm your email using the link in your inbox, then sign in.";
+            }
+            if (message.toLowerCase().includes("invalid login credentials")) {
+                return "Invalid email or password.";
+            }
+            if (message.toLowerCase().includes("already registered") || message.toLowerCase().includes("already been registered")) return "This email is already registered. Please login.";
+            if (message.toLowerCase().includes("email not confirmed")) return "Please confirm your email using the link in your inbox, then sign in.";
+            if (message.toLowerCase().includes("password")) return message;
+            if (message.toLowerCase().includes("rate limit")) return "Too many attempts. Please wait a few minutes and try again.";
+            if (message.toLowerCase().includes("failed to fetch") || message.toLowerCase().includes("network")) return "Network issue. Please check your connection and try again.";
+            return `Could not connect to Supabase right now${code ? ` (${code})` : ""}. Please try again.`;
+        }
+
+        function isPasswordRecoveryMode() {
+            const search = new URLSearchParams(window.location.search);
+            const hash = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+            return search.get("mode") === "reset-password" || hash.get("type") === "recovery";
+        }
+
+        function showPasswordResetRequest() {
+            document.getElementById("resetEmail").value = document.getElementById("loginEmail").value.trim().toLowerCase();
+            document.getElementById("resetError").textContent = "";
+            document.getElementById("resetSuccess").textContent = "";
+            showAuthForm("passwordResetRequestForm");
+        }
+
+        async function requestPasswordReset() {
+            const email = document.getElementById("resetEmail").value.trim().toLowerCase();
+            const error = document.getElementById("resetError");
+            const success = document.getElementById("resetSuccess");
+            error.textContent = "";
+            success.textContent = "";
+
+            if (!email) {
+                error.textContent = "Please enter your email address.";
+                return;
+            }
+
+            if (!window.ASG_BACKEND || typeof window.ASG_BACKEND.requestPasswordReset !== "function") {
+                error.textContent = "Supabase password reset is not ready. Please refresh and try again.";
+                return;
+            }
+
+            try {
+                await window.ASG_BACKEND.requestPasswordReset(email);
+                success.textContent = "Password reset link sent. Check your email inbox.";
+            } catch (resetError) {
+                error.textContent = formatBackendAuthError(resetError);
+            }
+        }
+
+        async function updatePassword() {
+            const password = document.getElementById("newPassword").value;
+            const confirm = document.getElementById("newPasswordConfirm").value;
+            const error = document.getElementById("updatePasswordError");
+            const success = document.getElementById("updatePasswordSuccess");
+            error.textContent = "";
+            success.textContent = "";
+
+            if (password.length < 6) {
+                error.textContent = "Password must be at least 6 characters.";
+                return;
+            }
+
+            if (password !== confirm) {
+                error.textContent = "Passwords do not match.";
+                return;
+            }
+
+            if (!window.ASG_BACKEND || typeof window.ASG_BACKEND.updatePassword !== "function") {
+                error.textContent = "Supabase password update is not ready. Please refresh and try again.";
+                return;
+            }
+
+            try {
+                const user = await window.ASG_BACKEND.updatePassword(password);
+                setCurrentUser(user);
+                success.textContent = "Password updated. Opening your workspace...";
+                setTimeout(() => {
+                    window.location.href = safeNextFor(user);
+                }, 700);
+            } catch (updateError) {
+                error.textContent = formatBackendAuthError(updateError);
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+            const password = document.getElementById("loginPassword").value;
+            const error = document.getElementById("loginError");
+            error.textContent = "";
+
+            if (!email || !password) {
+                error.textContent = "Please enter both email and password.";
+                return;
+            }
+
+            try {
+                const cloudUser = await window.ASG_BACKEND.signIn(email, password);
+                setCurrentUser(cloudUser);
+                window.location.href = safeNextFor(cloudUser);
+            } catch (authError) {
+                error.textContent = formatBackendAuthError(authError);
+            }
+        }
+
+        async function register() {
+            const name = document.getElementById("regName").value.trim();
+            const email = document.getElementById("regEmail").value.trim().toLowerCase();
+            const password = document.getElementById("regPassword").value;
+            const confirm = document.getElementById("regConfirm").value;
+            const error = document.getElementById("regError");
+            const success = document.getElementById("regSuccess");
+
+            error.textContent = "";
+            success.textContent = "";
+
+            if (!name || !email || !password || !confirm) {
+                error.textContent = "Please fill every field.";
+                return;
+            }
+
+            if (password.length < 6) {
+                error.textContent = "Password must be at least 6 characters.";
+                return;
+            }
+
+            if (password !== confirm) {
+                error.textContent = "Passwords do not match.";
+                return;
+            }
+
+            try {
+                const cloudUser = await window.ASG_BACKEND.register({ name, email, password });
+                setCurrentUser(cloudUser);
+                success.textContent = "Account created. Opening your student workspace...";
+                window.location.href = safeNextFor(cloudUser);
+            } catch (authError) {
+                error.textContent = formatBackendAuthError(authError);
+            }
+        }
+
+        function showAuthNotice() {
+            const notice = sessionStorage.getItem("authNotice");
+            if (!notice) return;
+
+            const container = document.querySelector(".auth-container");
+            const noticeBox = document.createElement("div");
+            noticeBox.className = "auth-notice";
+            noticeBox.textContent = notice;
+            container.insertBefore(noticeBox, container.firstChild);
+            sessionStorage.removeItem("authNotice");
+        }
+
+        ensureDefaultUsers();
+        showAuthNotice();
+
+        const mode = new URLSearchParams(window.location.search).get("mode");
+        if (mode === "register") switchTab("register");
+        if (isPasswordRecoveryMode()) showAuthForm("passwordUpdateForm");
+
+        (async function redirectSignedInUser() {
+            if (window.ASG_BACKEND && typeof window.ASG_BACKEND.restoreSession === "function") {
+                await window.ASG_BACKEND.restoreSession();
+            }
+            if (isPasswordRecoveryMode()) return;
+            const currentUser = sessionStorage.getItem("currentUser");
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                window.location.href = safeNextFor(user);
+            }
+        })();
+    </script>
+</body>
+</html>

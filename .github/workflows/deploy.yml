@@ -37,6 +37,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Install test browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Check pages and workflows
+        run: node scripts/browser-test.mjs
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 

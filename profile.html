@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | ASG Tech</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="supabase-backend.js"></script>
+    <script src="auth-check.js"></script>
+    <style>
+        .profile-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+        
+        .avatar {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            cursor: pointer;
+        }
+        
+        .profile-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-box {
+            background: white;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            margin: 0.25rem;
+        }
+        
+        .edit-btn {
+            background: #0066cc;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<script>
+    // Ensure UI updates after page loads
+    setTimeout(() => {
+        if(typeof updateUIForUser === 'function') {
+            updateUIForUser();
+        }
+    }, 100);
+</script>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">📚 ASG Tech</a>
+            <div class="nav-links">
+                <a href="index.html">🏠 Home</a>
+                <a href="blog.html">📝 Blog</a>
+                <a href="projects.html">💻 Projects</a>
+                <a href="courses.html">💰 Courses</a>
+                <a href="forum.html">🗣️ Forum</a>
+                <a href="videos.html">📹 Videos</a>
+                <a href="resources.html">🎁 Resources</a>
+                <a href="roadmap.html">🗺️ Roadmap</a>
+                <a href="quiz.html">📝 Quiz</a>
+                <a href="about.html">📖 About</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="profile-header">
+            <div class="avatar" id="avatar">🧑‍🎓</div>
+            <h2 id="displayName">Loading...</h2>
+            <p id="userEmail">Loading...</p>
+            <p>Member since <span id="joinDate">Loading...</span></p>
+            <button class="edit-btn" onclick="editProfile()">✏️ Edit Profile</button>
+            <button class="logout-page-btn" onclick="logout()" style="background: #ff4444; color: white; border: none; padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; margin-left: 0.5rem;">🚪 Logout</button>
+        </div>
+
+        <div class="profile-stats">
+            <div class="stat-box">
+                <div class="stat-number" id="studyStreak">0</div>
+                <div>Day Streak 🔥</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="coursesCompleted">0</div>
+                <div>Courses 📚</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="certificatesEarned">0</div>
+                <div>Certificates 🎓</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="forumPosts">0</div>
+                <div>Forum Posts 💬</div>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <h3>📊 Your Learning Progress</h3>
+            <div id="userProgress"></div>
+        </div>
+
+        <div class="info-card">
+            <h3>🏆 Achievements</h3>
+            <div id="userAchievements"></div>
+        </div>
+
+        <div class="info-card">
+            <h3>📜 Your Certificates</h3>
+            <div id="userCertificates"></div>
+        </div>
+
+        <div class="info-card">
+            <h3>💾 Saved Posts</h3>
+            <div id="savedPosts"></div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <h4>ASG Tech Institute</h4>
+                <p>Practical coding and AI training</p>
+            </div>
+            <div class="social">
+                <a href="https://github.com/007arjungangwar">🐙 GitHub</a>
+                <a href="#">💼 LinkedIn</a>
+            </div>
+        </div>
+        <p class="copyright">© 2024 | Your learning journey</p>
+    </footer>
+
+    <script>
+        const user = getCurrentUser();
+        
+        if(!user) {
+            window.location.href = 'login.html';
+        }
+        
+        function loadProfile() {
+            if (!user) return;
+            document.getElementById('displayName').textContent = user.name;
+            document.getElementById('userEmail').textContent = user.email;
+            
+            // Load user data from localStorage
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const userData = users.find(u => u.id === user.id);
+            
+            if(userData && userData.joinDate) {
+                document.getElementById('joinDate').innerHTML = new Date(userData.joinDate).toLocaleDateString();
+            }
+            
+            // Load avatar
+            const savedAvatar = localStorage.getItem(`avatar_${user.id}`);
+            if(savedAvatar) {
+                document.getElementById('avatar').innerHTML = savedAvatar;
+            }
+            
+            // Load stats
+            const streak = localStorage.getItem(`studyStreak_${user.id}`) || 0;
+            document.getElementById('studyStreak').innerHTML = streak;
+            
+            const enrollments = JSON.parse(localStorage.getItem(`enrollments_${user.id}`) || '[]');
+            document.getElementById('coursesCompleted').innerHTML = enrollments.length;
+            
+            const certificates = JSON.parse(localStorage.getItem(`certificates_${user.id}`) || '[]');
+            document.getElementById('certificatesEarned').innerHTML = certificates.length;
+            
+            const forumTopics = JSON.parse(localStorage.getItem('forumTopics') || '[]');
+            const userPosts = forumTopics.filter(t => t.authorEmail === user.email);
+            document.getElementById('forumPosts').innerHTML = userPosts.length;
+            
+            // Progress
+            const progress = JSON.parse(localStorage.getItem(`progress_${user.id}`) || '{}');
+            const progressValues = Object.values(progress);
+            const topicsCompleted = progressValues.length
+                ? Math.round((progressValues.filter(v => v === true).length / progressValues.length) * 100)
+                : 0;
+            document.getElementById('userProgress').innerHTML = `
+                <div class="progress-bar" style="margin: 1rem 0;">
+                    <div class="progress-fill" style="width: ${topicsCompleted}%; background: #0066cc; height: 10px; border-radius: 5px;"></div>
+                </div>
+                <p>${topicsCompleted}% complete on your learning path!</p>
+            `;
+            
+            // Achievements
+            const achievements = [];
+            if(topicsCompleted >= 25) achievements.push('🌱 Beginner Explorer');
+            if(topicsCompleted >= 50) achievements.push('📚 Knowledge Seeker');
+            if(topicsCompleted >= 75) achievements.push('🔥 Learning Machine');
+            if(topicsCompleted >= 100) achievements.push('🏆 Master Learner');
+            if(streak >= 7) achievements.push('⚡ Weekly Warrior');
+            if(streak >= 30) achievements.push('💪 Unstoppable');
+            
+            document.getElementById('userAchievements').innerHTML = achievements.length ? 
+                achievements.map(a => `<span class="badge">${a}</span>`).join('') :
+                '<p>Complete topics to earn achievements! 🎯</p>';
+            
+            // Certificates
+            document.getElementById('userCertificates').innerHTML = certificates.length ?
+                certificates.map(c => `<p>🎓 ${c.name} - ${new Date(c.date).toLocaleDateString()}</p>`).join('') :
+                '<p>No certificates yet. Complete courses to earn! 📜</p>';
+            
+            // Saved posts
+            const savedPosts = JSON.parse(localStorage.getItem(`savedPosts_${user.id}`) || '[]');
+            document.getElementById('savedPosts').innerHTML = savedPosts.length ?
+                savedPosts.map(post => `<p>📌 ${post}</p>`).join('') :
+                '<p>Save posts from blog to see them here!</p>';
+        }
+        
+        function editProfile() {
+            if (!user) return;
+            const newName = prompt('Enter your name:', user.name);
+            if(newName && newName !== user.name) {
+                // Update in users array
+                let users = JSON.parse(localStorage.getItem('users') || '[]');
+                const userIndex = users.findIndex(u => u.id === user.id);
+                if(userIndex !== -1) {
+                    users[userIndex].name = newName;
+                    localStorage.setItem('users', JSON.stringify(users));
+                    
+                    // Update session
+                    user.name = newName;
+                    sessionStorage.setItem('currentUser', JSON.stringify(user));
+                    
+                    loadProfile();
+                    updateUIForUser();
+                    alert('Profile updated successfully!');
+                }
+            }
+        }
+        
+        // Avatar selector
+        document.getElementById('avatar').addEventListener('click', () => {
+            const avatars = ['🧑‍🎓', '👨‍💻', '👩‍💻', '🧠', '📚', '⭐', '🚀', '🎯', '💡', '🔥', '🏆', '🎓'];
+            const selected = prompt('Choose an avatar:\n' + avatars.join(' '));
+            if(selected && avatars.includes(selected)) {
+                localStorage.setItem(`avatar_${user.id}`, selected);
+                document.getElementById('avatar').innerHTML = selected;
+            }
+        });
+        
+        loadProfile();
+    </script>
+
+<style>
+    .logout-page-btn:hover {
+        background: #cc0000;
+    }
+</style>
+</body>
+</html>
