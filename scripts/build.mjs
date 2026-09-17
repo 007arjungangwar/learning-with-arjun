@@ -15,9 +15,11 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(path.join(dist, 'assets'), { recursive: true });
 await mkdir(path.join(dist, 'vendor'), { recursive: true });
 await mkdir(path.join(dist, 'posts'), { recursive: true });
+await mkdir(path.join(dist, 'data'), { recursive: true });
 
 await build({ stdin: { contents: "export { createClient } from '@supabase/supabase-js';", resolveDir: root }, bundle: true, minify: true, format: 'esm', platform: 'browser', target: 'es2020', outfile: path.join(dist, 'vendor/supabase.js') });
 await copyFile(path.join(root, 'node_modules/html2canvas/dist/html2canvas.min.js'), path.join(dist, 'vendor/html2canvas.js'));
+await copyFile(path.join(root, 'data/employees_raw_data.csv'), path.join(dist, 'data/employees_raw_data.csv'));
 
 const files = (await readdir(root)).filter(name => /\.(html|js|css|svg|png)$/.test(name));
 files.push('manifest.json', ...(await readdir(path.join(root, 'posts'))).filter(name => name.endsWith('.html')).map(name => `posts/${name}`));

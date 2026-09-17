@@ -2978,6 +2978,9 @@
                 difficulty: document.getElementById("codingDifficulty").value,
                 prompt,
                 starterCode,
+                datasetMode: editId
+                    ? (codingChallenges.find((item) => item.id === editId) || {}).datasetMode || ""
+                    : "",
                 tests,
                 timeLimitSeconds: timeLimitMinutes * 60,
                 status: document.getElementById("codingStatus").value,

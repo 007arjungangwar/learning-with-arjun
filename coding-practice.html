@@ -78,6 +78,7 @@
         asgEnhancePythonEditor(editor);
         let pyodideInstance = null;
         let pyodideLoading = null;
+        let pandasLoading = null;
         let codingChallenges = [];
         let practiceSubjects = [];
         let activeSubjectKey = localStorage.getItem("asgCodingPracticeSubject") || "";
@@ -94,7 +95,9 @@
 
         function draftKey(challengeId) {
             const userId = practiceUser ? practiceUser.id : "guest";
-            return `codingDraft_${userId}_${challengeId}`;
+            const challenge = codingChallenges.find((item) => item.id === challengeId);
+            const version = challenge && challenge.datasetMode === "employees" ? "employees_v1" : "standard";
+            return `codingDraft_${userId}_${challengeId}_${version}`;
         }
 
         function practiceSubjectKey(parts) {
@@ -144,6 +147,7 @@
 
             allChallenges.forEach((challenge) => {
                 const subject = getPracticeSubjectForChallenge(challenge);
+                if (subject.key === "pandas" && challenge.datasetMode !== "employees") return;
                 const group = groupedSubjects.get(subject.key) || {
                     key: practiceSubjectKey(["practice", subject.key]),
                     kind: subject.key,
@@ -169,6 +173,10 @@
                 return `${challenge.courseTitle} / ${challenge.topicTitle}`;
             }
             return challenge.examTopic || challenge.topic || "Coding";
+        }
+
+        function isPandasWorkspace(challenge = codingChallenges[currentChallengeIndex]) {
+            return Boolean(challenge && challenge.datasetMode === "employees");
         }
 
         function updatePracticeStats() {
@@ -268,7 +276,20 @@
                 </div>
                 <h2>${escapeHtml(challenge.title)}</h2>
                 <pre class="asg-question-text">${escapeHtml(challenge.prompt)}</pre>
-                <div class="asg-test-preview">
+                ${isPandasWorkspace(challenge) ? `
+                    <div class="asg-dataset-panel">
+                        <div>
+                            <span>Employees_raw_Data.csv</span>
+                            <strong>308 rows x 8 columns</strong>
+                        </div>
+                        <p><code>df</code> and <code>pd</code> are ready in every run. The original file is reloaded each time, so experiments are safe.</p>
+                        <div class="asg-dataset-columns">
+                            ${["emp_name", "department", "join_date", "salary", "age", "performance_rating", "city", "remote_work"]
+                                .map((column) => `<code>${column}</code>`).join("")}
+                        </div>
+                        <a class="btn-secondary" href="data/employees_raw_data.csv" download>Download CSV</a>
+                    </div>
+                ` : `<div class="asg-test-preview">
                     <h3>Sample tests</h3>
                     ${challenge.tests.map((test, index) => `
                         <div class="asg-test-row">
@@ -277,7 +298,7 @@
                             <code>Expected: ${escapeHtml(JSON.stringify(test.expected))}</code>
                         </div>
                     `).join("")}
-                </div>
+                </div>`}
             `;
         }
 
@@ -423,6 +444,60 @@
             return pyodideLoading;
         }
 
+        async function preparePandasWorkspace(engine) {
+            if (!pandasLoading) {
+                pandasLoading = (async () => {
+                    document.getElementById("engineStatus").textContent = "Loading Pandas and employee data...";
+                    await engine.loadPackage("pandas");
+                    const response = await fetch("data/employees_raw_data.csv");
+                    if (!response.ok) throw new Error("Employee dataset could not be loaded.");
+                    engine.FS.writeFile("/employees_raw_data.csv", new Uint8Array(await response.arrayBuffer()));
+                    document.getElementById("engineStatus").textContent = "Pandas ready | df: 308 rows x 8 columns";
+                })().catch((error) => {
+                    pandasLoading = null;
+                    throw error;
+                });
+            }
+            await pandasLoading;
+        }
+
+        function buildPandasHarness(code) {
+            const codeLiteral = JSON.stringify(code);
+            return `
+import ast
+import contextlib
+import io
+import json
+import traceback
+import pandas as pd
+
+USER_CODE = ${codeLiteral}
+payload = {"mode": "pandas", "passed": 0, "total": 1, "results": [], "stdout": "", "error": ""}
+output = io.StringIO()
+df = pd.read_csv("/employees_raw_data.csv")
+namespace = {"pd": pd, "df": df}
+
+try:
+    tree = ast.parse(USER_CODE, mode="exec")
+    last_expression = None
+    if tree.body and isinstance(tree.body[-1], ast.Expr):
+        last_expression = ast.Expression(tree.body.pop().value)
+    with contextlib.redirect_stdout(output):
+        if tree.body:
+            exec(compile(tree, "student_code.py", "exec"), namespace)
+        if last_expression:
+            result = eval(compile(last_expression, "student_code.py", "eval"), namespace)
+            if result is not None:
+                print(result)
+    payload["passed"] = 1
+except Exception:
+    payload["error"] = traceback.format_exc(limit=6)
+
+payload["stdout"] = output.getvalue()
+json.dumps(payload, default=str)
+`;
+        }
+
         function buildPythonHarness(code, tests) {
             const codeLiteral = JSON.stringify(code);
             const testsLiteral = JSON.stringify(JSON.stringify(tests));
@@ -488,6 +563,30 @@ json.dumps(payload, default=str)
 
         function renderRunResult(payload, savedSubmission) {
             const output = document.getElementById("runOutput");
+            if (payload.mode === "pandas") {
+                const errorBlock = payload.error ? asgRenderPythonError(payload.error) : "";
+                output.innerHTML = `
+                    <div class="asg-result-summary">
+                        <div>
+                            <span>Dataset</span>
+                            <strong>308 x 8</strong>
+                        </div>
+                        <div>
+                            <span>Status</span>
+                            <strong>${payload.error ? "Check code" : "Complete"}</strong>
+                        </div>
+                        <p>${savedSubmission ? "Run saved to your progress." : "Run completed."}</p>
+                    </div>
+                    ${errorBlock}
+                    <section class="asg-console-output asg-dataframe-output">
+                        <h3>DataFrame output</h3>
+                        ${payload.stdout
+                            ? `<pre>${escapeHtml(payload.stdout)}</pre>`
+                            : `<p>No output yet. Put an expression such as <code>df.head()</code> on the last line, or use <code>print(...)</code>.</p>`}
+                    </section>
+                `;
+                return;
+            }
             const percentage = payload.total ? Math.round((payload.passed / payload.total) * 100) : 0;
             const errorBlock = payload.error ? asgRenderPythonError(payload.error) : "";
             const stdoutBlock = payload.stdout || payload.setupStdout
@@ -548,7 +647,10 @@ json.dumps(payload, default=str)
 
             try {
                 const engine = await getPyodideEngine();
-                const harness = buildPythonHarness(editor.value, challenge.tests);
+                if (isPandasWorkspace(challenge)) await preparePandasWorkspace(engine);
+                const harness = isPandasWorkspace(challenge)
+                    ? buildPandasHarness(editor.value)
+                    : buildPythonHarness(editor.value, challenge.tests);
                 const rawResult = await engine.runPythonAsync(harness);
                 const payload = JSON.parse(rawResult);
                 const percentage = payload.total ? Math.round((payload.passed / payload.total) * 100) : 0;

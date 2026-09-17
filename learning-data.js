@@ -2209,6 +2209,49 @@ const ASG_REFRESHED_DEFAULT_CODING_IDS = new Set([
     "topic_python_errors_parse_ints"
 ]);
 
+const ASG_HR_PANDAS_WORKSPACE = {
+    topic_pandas_setup_dataframe_shape: {
+        title: "Explore the Employee DataFrame",
+        prompt: "The employee dataset is loaded as df. Display its shape, column names, and first five rows. What do these results tell you about the dataset?",
+        starterCode: "# df is already loaded\nprint(\"Shape:\", df.shape)\nprint(\"Columns:\", df.columns.tolist())\ndf.head()"
+    },
+    topic_pandas_import_inspect_head: {
+        title: "Inspect Employee Data Types",
+        prompt: "Inspect the employee dataset using df.info() and df.describe(include='all'). Then display a sample of ten rows.",
+        starterCode: "df.info()\nprint(df.describe(include='all'))\ndf.head(10)"
+    },
+    topic_pandas_select_columns: {
+        title: "Select and Filter Employees",
+        prompt: "Select emp_name, department, salary, and city. Filter employees whose salary is above 75000 and sort them from highest to lowest salary.",
+        starterCode: "columns = [\"emp_name\", \"department\", \"salary\", \"city\"]\nhigh_salary = df.loc[df[\"salary\"] > 75000, columns]\nhigh_salary.sort_values(\"salary\", ascending=False).head(10)"
+    },
+    topic_pandas_clean_missing_fill: {
+        title: "Find and Clean Missing Values",
+        prompt: "Count missing values in every column. Create df_clean, fill missing department and remote_work values with 'Unknown', and fill missing salary values with the median salary.",
+        starterCode: "print(df.isnull().sum())\n\ndf_clean = df.copy()\ndf_clean[\"department\"] = df_clean[\"department\"].fillna(\"Unknown\")\ndf_clean[\"remote_work\"] = df_clean[\"remote_work\"].fillna(\"Unknown\")\ndf_clean[\"salary\"] = df_clean[\"salary\"].fillna(df_clean[\"salary\"].median())\ndf_clean.isnull().sum()"
+    },
+    topic_pandas_groupby_sum: {
+        title: "Department Salary Analysis",
+        prompt: "Standardize department names, then use groupby to calculate employee count and average salary for each department. Sort by average salary from highest to lowest.",
+        starterCode: "analysis = df.copy()\nanalysis[\"department\"] = analysis[\"department\"].str.strip().str.title()\nanalysis.groupby(\"department\").agg(\n    employee_count=(\"emp_name\", \"count\"),\n    average_salary=(\"salary\", \"mean\")\n).sort_values(\"average_salary\", ascending=False).round(2)"
+    },
+    topic_pandas_merge_by_id: {
+        title: "Detect Duplicate Employees",
+        prompt: "Find all duplicate rows, count them, create a DataFrame without duplicates, and compare the original and cleaned shapes.",
+        starterCode: "duplicates = df[df.duplicated(keep=False)]\nprint(\"Duplicate rows:\", df.duplicated().sum())\nprint(\"Original shape:\", df.shape)\n\ndf_clean = df.drop_duplicates()\nprint(\"Clean shape:\", df_clean.shape)\nduplicates.head(10)"
+    },
+    topic_pandas_time_series_month_total: {
+        title: "Employee Joining Trends",
+        prompt: "Convert join_date to datetime, create join_year, and count how many employees joined in each year. Display the yearly trend in chronological order.",
+        starterCode: "timeline = df.drop_duplicates().copy()\ntimeline[\"join_date\"] = pd.to_datetime(timeline[\"join_date\"], errors=\"coerce\")\ntimeline[\"join_year\"] = timeline[\"join_date\"].dt.year\ntimeline.groupby(\"join_year\").size().rename(\"employees_joined\").to_frame()"
+    },
+    topic_pandas_analysis_project_top_category: {
+        title: "HR Analytics Summary",
+        prompt: "Create an HR summary by department with employee count, average age, average salary, and average performance rating. Clean department names and sort by employee count.",
+        starterCode: "hr = df.drop_duplicates().copy()\nhr[\"department\"] = hr[\"department\"].fillna(\"Unknown\").str.strip().str.title()\nhr.groupby(\"department\").agg(\n    employees=(\"emp_name\", \"count\"),\n    average_age=(\"age\", \"mean\"),\n    average_salary=(\"salary\", \"mean\"),\n    average_rating=(\"performance_rating\", \"mean\")\n).sort_values(\"employees\", ascending=False).round(2)"
+    }
+};
+
 const ASG_PYTHON_BEGINNER_TOPICS = [
     "Python Basics: Variables, Data Types, Operators, and Input/Output",
     "Control Flow: Conditional Statements (if, elif, else), Loops (for, while)",
@@ -3046,6 +3089,10 @@ function asgGetLatestRecord(records, dateKey) {
 }
 
 function asgNormalizeCodingChallenge(challenge, index) {
+    const pandasWorkspace = ASG_HR_PANDAS_WORKSPACE[challenge.id];
+    if (pandasWorkspace && challenge.datasetMode !== "employees") {
+        challenge = { ...challenge, ...pandasWorkspace, datasetMode: "employees" };
+    }
     const tests = Array.isArray(challenge.tests) ? challenge.tests : [];
     const courseId = challenge.courseId ? asgSlugify(challenge.courseId, "course") : "";
     const topicId = challenge.topicId ? asgSlugify(challenge.topicId, "topic") : "";
@@ -3081,6 +3128,7 @@ function asgNormalizeCodingChallenge(challenge, index) {
         difficulty: String(challenge.difficulty || "Beginner").trim(),
         prompt: String(challenge.prompt || ""),
         starterCode: String(challenge.starterCode || "def solution():\n    pass\n"),
+        datasetMode: challenge.datasetMode === "employees" ? "employees" : "",
         tests: tests.map((test) => ({
             args: Array.isArray(test.args) ? test.args : [],
             expected: test.expected
@@ -3095,7 +3143,7 @@ function asgNormalizeCodingChallenge(challenge, index) {
         ),
         status: challenge.status === "draft" ? "draft" : "active",
         order: Number.isFinite(Number(challenge.order)) ? Number(challenge.order) : index + 1,
-        updatedAt: new Date().toISOString()
+        updatedAt: challenge.updatedAt || new Date().toISOString()
     };
 }
 

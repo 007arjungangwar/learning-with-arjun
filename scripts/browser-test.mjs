@@ -12,6 +12,24 @@ const pages = (await readdir('dist')).filter(name => name.endsWith('.html') && n
 pages.push('posts/post1.html', 'posts/post2.html');
 await mkdir('test-results', { recursive: true });
 
+async function readPageInfo(page) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      return await page.evaluate(() => ({
+        title: document.title,
+        text: document.body.innerText.trim().length,
+        overflow: document.documentElement.scrollWidth - innerWidth,
+        path: location.pathname,
+        dcl: Math.round(performance.getEntriesByType('navigation')[0]?.domContentLoadedEventEnd || 0),
+        fcp: Math.round(performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0)
+      }));
+    } catch (error) {
+      if (!/Execution context was destroyed|navigation/i.test(error.message) || attempt === 2) throw error;
+      await page.waitForTimeout(250);
+    }
+  }
+}
+
 async function fixtureContext(role, viewport) {
   const context = await browser.newContext({ viewport, serviceWorkers: 'block' });
   const user = role === 'guest' ? null : { id: '11111111-1111-4111-8111-111111111111', name: 'Test Learner', email: role === 'admin' ? 'arjungangwariitpkd@gmail.com' : 'learner@example.test', role, provider: 'supabase', joinDate: '2026-01-01' };
@@ -47,16 +65,10 @@ try {
         page.on('response', response => { if (response.url().startsWith(base) && response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
         const start = Date.now();
         try {
-          await page.goto(`${base}${file}`, { waitUntil: 'domcontentloaded', timeout: 10000 });
-          await page.waitForTimeout(180);
-          const info = await page.evaluate(() => ({
-            title: document.title,
-            text: document.body.innerText.trim().length,
-            overflow: document.documentElement.scrollWidth - innerWidth,
-            path: location.pathname,
-            dcl: Math.round(performance.getEntriesByType('navigation')[0].domContentLoadedEventEnd),
-            fcp: Math.round(performance.getEntriesByName('first-contentful-paint')[0]?.startTime || 0)
-          }));
+          await page.goto(`${base}${file}`, { waitUntil: 'commit', timeout: 15000 });
+          await page.waitForLoadState('domcontentloaded', { timeout: 15000 }).catch(() => {});
+          await page.waitForTimeout(250);
+          const info = await readPageInfo(page);
           if (info.text < 30) errors.push('Empty page');
           if (info.overflow > 2) errors.push(`Horizontal overflow: ${info.overflow}px`);
           if (role === 'guest' && ['admin.html', 'courses.html', 'profile.html'].includes(file) && !info.path.endsWith('login.html')) errors.push('Missing login guard');
@@ -88,8 +100,21 @@ try {
           assert.ok(await page.evaluate(() => asgGetQuizAttempts(getCurrentUser()).length > 0));
           if (process.env.RUN_PYTHON === '1') {
             await page.goto(`${base}coding-practice.html`, { waitUntil: 'domcontentloaded' });
-            const result = await page.evaluate(async () => (await getPyodideEngine()).runPythonAsync('sum([2, 3])'));
-            assert.equal(result, 5, 'Python runtime must execute code');
+            const result = await page.evaluate(async () => {
+              const engine = await getPyodideEngine();
+              const pythonResult = await engine.runPythonAsync('sum([2, 3])');
+              const pandasSubject = practiceSubjects.find(subject => subject.kind === 'pandas');
+              selectPracticeSubject(pandasSubject.key);
+              await preparePandasWorkspace(engine);
+              const payload = JSON.parse(await engine.runPythonAsync(buildPandasHarness('print(df.shape)\ndf.groupby("city")["salary"].mean().round(2)')));
+              return { pythonResult, payload, title: codingChallenges[0].title };
+            });
+            assert.equal(result.pythonResult, 5, 'Python runtime must execute code');
+            assert.equal(result.payload.error, '', 'Pandas workspace must run without an error');
+            assert.match(result.payload.stdout, /\(308, 8\)/, 'Pandas workspace must load the complete employee dataset');
+            assert.match(result.payload.stdout, /Bangalore/, 'Pandas groupby output must be rendered');
+            assert.equal(result.title, 'Explore the Employee DataFrame');
+            await page.screenshot({ path: 'test-results/student-pandas-workspace.png', fullPage: true });
           }
         } else {
           await page.goto(`${base}admin.html`, { waitUntil: 'domcontentloaded' });

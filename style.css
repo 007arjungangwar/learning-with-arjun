@@ -3486,6 +3486,59 @@ body.asg-theme-dark.asg-lesson-focus .asg-topic-content {
     color: var(--asg-ink);
 }
 
+.asg-dataset-panel {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--asg-border);
+    border-radius: 8px;
+    background: var(--asg-surface-tint);
+}
+
+.asg-dataset-panel > div:first-child {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: center;
+}
+
+.asg-dataset-panel span,
+.asg-dataset-panel strong {
+    overflow-wrap: anywhere;
+}
+
+.asg-dataset-columns {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+
+.asg-dataset-columns code {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--asg-border);
+    border-radius: 4px;
+    background: var(--asg-surface-raised);
+    color: var(--asg-primary-dark);
+}
+
+.asg-dataset-panel .btn-secondary {
+    justify-self: start;
+}
+
+.asg-dataframe-output pre {
+    max-height: 520px;
+    overflow: auto;
+    white-space: pre;
+}
+
+@media (max-width: 560px) {
+    .asg-dataset-panel > div:first-child {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
 .asg-output-panel pre,
 .asg-error-output {
     overflow: auto;
