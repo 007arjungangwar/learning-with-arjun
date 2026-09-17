@@ -79,6 +79,7 @@ try {
         if (role === 'student') {
           await page.goto(`${base}quiz.html`, { waitUntil: 'domcontentloaded' });
           await page.getByRole('button', { name: 'Start Quiz Exam', exact: true }).click();
+          await page.locator('input[type=radio]').first().waitFor({ state: 'attached', timeout: 15000 });
           const names = await page.locator('input[type=radio]').evaluateAll(inputs => [...new Set(inputs.map(input => input.name))]);
           assert.ok(names.length > 0, 'Quiz must show questions');
           for (const name of names) await page.locator('input[type=radio]').filter({ visible: true }).evaluateAll((inputs, name) => inputs.find(input => input.name === name)?.click(), name);
