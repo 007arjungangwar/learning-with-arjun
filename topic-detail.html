@@ -424,6 +424,9 @@ json.dumps(payload, default=str)
                         </div>
                         <h2>${escapeHtml(challenge.title)}</h2>
                         <pre class="asg-question-text">${escapeHtml(challenge.prompt)}</pre>
+                        ${challenge.datasetMode === "employees" ? `
+                        <a class="btn-primary" href="coding-practice.html?challenge=${encodeURIComponent(challenge.id)}">Open Pandas Workspace</a>
+                        ` : `
                         <div class="asg-test-preview">
                             <h3>Tests</h3>
                             ${challenge.tests.map((test, index) => `
@@ -443,6 +446,7 @@ json.dumps(payload, default=str)
                             <h3>Run output</h3>
                             <p>Run your solution to see printed output, return values, and save coding progress for this topic.</p>
                         </div>
+                        `}
                     </section>
                 </div>
             `;

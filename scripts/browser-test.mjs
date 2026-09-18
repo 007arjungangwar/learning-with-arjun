@@ -117,6 +117,17 @@ try {
             await page.screenshot({ path: 'test-results/student-pandas-workspace.png', fullPage: true });
           }
         } else {
+          await page.goto(`${base}coding-practice.html?challenge=topic_pandas_groupby_sum`, { waitUntil: 'domcontentloaded' });
+          const pandasTask = await page.evaluate(() => codingChallenges[currentChallengeIndex]);
+          assert.equal(pandasTask.id, 'topic_pandas_groupby_sum', 'Deep links must select the requested Pandas task');
+          await page.goto(`${base}topic-detail.html?course=${encodeURIComponent(pandasTask.courseId)}&topic=${encodeURIComponent(pandasTask.topicId)}`, { waitUntil: 'domcontentloaded' });
+          await page.getByRole('button', { name: 'Coding', exact: true }).click();
+          const workspaceLink = page.getByRole('link', { name: 'Open Pandas Workspace', exact: true });
+          assert.equal(await workspaceLink.getAttribute('href'), 'coding-practice.html?challenge=topic_pandas_groupby_sum');
+          assert.equal(await page.locator('#topicCodingEditor').count(), 0, 'Dataset tasks must not use the solution-function runner');
+          await workspaceLink.click();
+          await page.waitForURL(/coding-practice\.html\?challenge=topic_pandas_groupby_sum/);
+          await page.waitForFunction(() => typeof codingChallenges !== 'undefined' && codingChallenges[currentChallengeIndex]?.id === 'topic_pandas_groupby_sum');
           await page.goto(`${base}admin.html`, { waitUntil: 'domcontentloaded' });
           await page.locator('[data-admin-target="assessments"]').click();
           await page.locator('button[onclick="editCodingChallenge(\'topic_python_files_count_lines\')"]').click();

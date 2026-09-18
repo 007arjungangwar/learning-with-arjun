@@ -687,6 +687,14 @@ json.dumps(payload, default=str)
 
         function loadPracticeData(keepChallengeId = "") {
             practiceSubjects = buildPracticeSubjects();
+            const requestedId = new URLSearchParams(window.location.search).get("challenge");
+            if (!keepChallengeId && requestedId) {
+                const requestedSubject = practiceSubjects.find((subject) => subject.challenges.some((challenge) => challenge.id === requestedId));
+                if (requestedSubject) {
+                    activeSubjectKey = requestedSubject.key;
+                    keepChallengeId = requestedId;
+                }
+            }
             if (!practiceSubjects.some((subject) => subject.key === activeSubjectKey)) {
                 activeSubjectKey = practiceSubjects[0] ? practiceSubjects[0].key : "";
             }
